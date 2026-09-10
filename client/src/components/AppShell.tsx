@@ -3,42 +3,35 @@ import { Bell } from "lucide-react";
 import { DesktopSidebar } from "./DesktopSidebar.js";
 import { MobileBottomNav } from "./MobileBottomNav.js";
 import { trpc } from "../lib/trpc.js";
-
-/** Marca da HUB — logo oficial (client/public/logo.png). */
-function BrandMark() {
-  return (
-    <span className="flex items-center gap-2">
-      <img src="/logo.png" alt="HubAgendator" className="h-7 w-auto object-contain" />
-    </span>
-  );
-}
+import { FloatingNewTaskButton } from "./ui.js";
 
 export function AppShell() {
   const notifications = trpc.notifications.list.useQuery({});
   const unread = notifications.data?.unread ?? 0;
 
   return (
-    <div className="mx-auto min-h-dvh w-full max-w-6xl md:flex">
+    <div className="mx-auto min-h-dvh w-full max-w-7xl bg-surface md:flex">
       <DesktopSidebar />
       <div className="flex min-h-dvh flex-1 flex-col pb-24 md:pb-0">
-        <header className="sticky top-0 z-20 flex items-center justify-between border-b border-line bg-white/90 px-4 py-2.5 backdrop-blur-xl">
-          <BrandMark />
-          <NavLink
-            to="/app/notifications"
-            aria-label={unread > 0 ? `Notificações, ${unread} não lidas` : "Notificações"}
-            className="touch-target relative grid place-items-center rounded-lg p-2 text-slate-500 hover:bg-slate-100"
-          >
-            <Bell size={20} />
-            {unread > 0 && (
-              <span className="absolute -right-0.5 -top-0.5 grid min-w-[16px] place-items-center rounded-full bg-danger-600 px-1 text-[10px] font-bold leading-4 text-white tnum">
-                {unread}
-              </span>
-            )}
-          </NavLink>
+        <header className="sticky top-0 z-20 border-b border-outline-variant bg-surface/95 px-4 py-3 backdrop-blur-xl md:px-8">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <img src="/logo.png" alt="HubAgendator" className="h-7 w-auto object-contain" />
+              <span className="hidden text-[12px] font-medium text-on-surface-variant sm:inline">Gestor (Carlos)</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-[11px] font-medium uppercase tracking-[.06em] text-secondary">Coordenação</span>
+              <NavLink to="/app/notifications" aria-label="Notificações" className="relative grid h-10 w-10 place-items-center rounded-full text-on-surface-variant hover:bg-surface-container">
+                <Bell size={18} />
+                {unread > 0 && <span className="absolute right-0 top-0 grid min-w-4 place-items-center rounded-full bg-error px-1 text-[10px] font-bold text-on-error">{unread}</span>}
+              </NavLink>
+            </div>
+          </div>
         </header>
-        <main className="flex-1 px-4 py-4">
+        <main className="flex-1 px-4 py-5 md:px-8 md:py-7">
           <Outlet />
         </main>
+        <FloatingNewTaskButton />
         <MobileBottomNav />
       </div>
     </div>

@@ -42,16 +42,29 @@ export function TasksPage({ scope }: { scope: "all" | "mine" }) {
     <div>
       {scope === "mine" ? (
         <div className="mb-4">
-          <h1 className="text-xl font-semibold tracking-tight text-slate-900">Minhas tarefas</h1>
-          <p className="mt-0.5 text-sm text-slate-500">O que você precisa fazer agora{firstName ? `, ${firstName}` : ""}.</p>
+          <h1 className="text-xl font-semibold tracking-tight text-on-surface">Minhas Tarefas</h1>
+          <p className="mt-0.5 text-sm text-on-surface-variant">O que você precisa fazer agora{firstName ? `, ${firstName}` : ""}.</p>
         </div>
       ) : (
         <PageHeader title="Tarefas" subtitle="Toque para abrir, iniciar e concluir" />
       )}
+      {scope === "mine" && (
+        <div className="-mx-4 mb-3 flex gap-2 overflow-x-auto px-4 pb-1 no-scrollbar">
+          {([
+            ["Atrasadas", { ...filters, overdueOnly: true, status: "" as const }],
+            ["Para Hoje", { ...filters, overdueOnly: false, status: "todo" as const }],
+            ["Em Andamento", { ...filters, overdueOnly: false, status: "in_progress" as const }],
+            ["Próximas", { ...filters, overdueOnly: false, status: "todo" as const }],
+            ["Concluídas", { ...filters, overdueOnly: false, status: "completed" as const }],
+          ] as const).map(([label, next]) => (
+            <button key={label} type="button" onClick={() => setFilters(next)} className="h-9 shrink-0 rounded-full border border-outline-variant bg-surface-container-lowest px-3 text-[13px] font-medium text-on-surface-variant hover:bg-surface-container">{label}</button>
+          ))}
+        </div>
+      )}
       <TaskFilters value={filters} onChange={setFilters} />
       {list.isPending ? <LoadingState /> :
         list.isError ? <ErrorState message="Não foi possível carregar. Verifique sua conexão e tente novamente." onRetry={() => list.refetch()} /> :
-        list.data.items.length === 0 ? <EmptyState title="Não encontramos tarefas com esses filtros" hint="Ajuste a busca ou limpe os filtros." action={<button onClick={() => setFilters(EMPTY_FILTERS)} className="font-semibold text-accent-700">Limpar filtros</button>} /> :
+        list.data.items.length === 0 ? <EmptyState title="Não encontramos tarefas com esses filtros" hint="Ajuste a busca ou limpe os filtros." action={<button onClick={() => setFilters(EMPTY_FILTERS)} className="font-semibold text-primary">Limpar filtros</button>} /> :
         scope === "mine" ? <MyTasksGroups items={list.data.items} /> : <TaskList tasks={list.data.items} />}
     </div>
   );
@@ -84,11 +97,11 @@ function Group({ title, count, children }: { title: string; count: number; child
   return (
     <section className="mt-5">
       <div className="mb-2 flex items-center justify-between">
-        <h2 className="flex items-center gap-2 text-[15px] font-semibold text-slate-900">
-          <span className="h-2 w-2 rounded-full bg-accent-600" aria-hidden />
+        <h2 className="flex items-center gap-2 text-[15px] font-semibold text-on-surface">
+          <span className="h-2 w-2 rounded-full bg-primary" aria-hidden />
           {title}
         </h2>
-        <span className="text-xs text-slate-500 tnum">{count}</span>
+        <span className="text-xs text-on-surface-variant tnum">{count}</span>
       </div>
       {children}
     </section>
@@ -125,7 +138,7 @@ export function NewTaskPage() {
     onSuccess: (task) => {
       utils.tasks.list.invalidate();
       utils.tasks.getSummary.invalidate();
-      notify(`Tarefa criada para ${userName(task.assigneeId)}.`);
+      notify("Demanda Encaminhada!");
       setCreated({ id: task.id, assigneeId: task.assigneeId });
     },
     onError: () => notify("Não foi possível salvar. O rascunho continua aqui.", "error"),
@@ -151,44 +164,45 @@ export function NewTaskPage() {
   if (created) {
     return (
       <div className="mx-auto max-w-lg space-y-3 py-6 text-center">
-        <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-success-100 text-success-700">
+        <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-secondary-fixed text-on-secondary-fixed">
           <CheckCircle2 size={26} />
         </div>
-        <p role="status" className="font-semibold text-slate-900">Tarefa criada para {userName(created.assigneeId)}.</p>
-        <Link to={`/app/tasks/${created.id}`} className="block rounded-xl bg-accent-700 py-3 font-semibold text-white">Abrir tarefa</Link>
-        <button onClick={() => { setCreated(null); setTitle(""); setDescription(""); setDueAt(""); }} className="block w-full rounded-xl border border-line bg-white py-3 font-semibold">Criar outra</button>
-        <button onClick={() => nav("/app")} className="w-full py-3 font-semibold text-slate-500">Voltar ao painel</button>
+        <p role="status" className="font-semibold text-on-surface">Demanda Encaminhada!</p>
+        <p className="text-[13px] text-on-surface-variant">Notificação despachada ao técnico.</p>
+        <Link to={`/app/tasks/${created.id}`} className="block rounded-md bg-primary-container py-3 font-semibold text-on-primary">Abrir tarefa</Link>
+        <button onClick={() => { setCreated(null); setTitle(""); setDescription(""); setDueAt(""); }} className="block w-full rounded-md border border-outline-variant bg-surface-container-lowest py-3 font-semibold">Criar outra</button>
+        <button onClick={() => nav("/app")} className="w-full py-3 font-semibold text-on-surface-variant">Voltar ao painel</button>
       </div>
     );
   }
 
-  const card = "rounded-xl border border-line bg-white p-4 shadow-sm";
-  const label = "mb-1.5 block text-sm font-medium text-slate-800";
-  const field = "h-10 w-full rounded-lg border border-line bg-slate-50 px-3 text-sm outline-none focus:border-accent-600 focus:bg-white";
+  const card = "rounded-lg border border-outline-variant bg-surface-container-lowest p-4 shadow-tier-1";
+  const label = "mb-1.5 block text-[13px] font-medium text-on-surface";
+  const field = "h-11 w-full rounded-md border border-outline-variant bg-surface-container-low px-3 text-[13px] outline-none focus:border-primary focus:bg-surface-container-lowest";
 
   return (
     <form className="mx-auto max-w-lg space-y-3 pb-28" onSubmit={(e) => { e.preventDefault(); submit(); }}>
-      <PageHeader title="Nova tarefa" subtitle="Registre uma demanda operacional em menos de 1 minuto." />
+      <PageHeader eyebrow="Despacho Ágil" title="Nova Tarefa" subtitle="Registre uma demanda operacional direta da equipe." />
 
       <div className={card}>
-        <label className={label} htmlFor="nt-title">Título da demanda *</label>
-        <input id="nt-title" className={field} value={title} onChange={(e) => setTitle(e.target.value)} maxLength={200} placeholder="Ex.: Mandar cobrança para o Cliente X" />
+        <label className={label} htmlFor="nt-title">Título da Demanda</label>
+        <input id="nt-title" className={field} value={title} onChange={(e) => setTitle(e.target.value)} maxLength={200} placeholder="Ex.: Configurar computador do cliente" />
       </div>
 
       <div className={card}>
-        <label className={label}>Responsável *</label>
+        <label className={label}>Responsável pela Execução</label>
         <div className="grid grid-cols-2 gap-2">
           {activeMembers.map((m) => (
             <button
               type="button"
               key={m.id}
               onClick={() => setAssigneeId(m.id)}
-              className={`flex items-center gap-2 rounded-lg border p-2 text-left transition ${assigneeId === m.id ? "border-accent-600 bg-accent-50" : "border-line bg-slate-50 hover:bg-slate-100"}`}
+              className={`flex items-center gap-2 rounded-lg border p-2 text-left transition ${assigneeId === m.id ? "border-primary bg-primary-fixed" : "border-outline-variant bg-surface-container-low hover:bg-surface-container"}`}
             >
               <AssigneeAvatar name={m.name} size={28} />
               <span className="min-w-0">
-                <span className="block truncate text-[13px] font-medium text-slate-800">{m.name}</span>
-                <span className="block truncate text-[11px] text-slate-500">{m.role}</span>
+                <span className="block truncate text-[13px] font-medium text-on-surface">{m.name}</span>
+                <span className="block truncate text-[11px] text-on-surface-variant">{m.role}</span>
               </span>
             </button>
           ))}
@@ -203,7 +217,7 @@ export function NewTaskPage() {
               type="button"
               key={p}
               onClick={() => setPriority(p)}
-              className={`rounded-lg border py-2 text-xs font-semibold transition ${priority === p ? "border-accent-600 bg-accent-50 text-accent-700" : "border-line bg-slate-50 text-slate-600 hover:bg-slate-100"}`}
+              className={`rounded-lg border py-2 text-xs font-semibold transition ${priority === p ? "border-primary bg-primary-fixed text-primary" : "border-outline-variant bg-surface-container-low text-on-surface-variant hover:bg-surface-container"}`}
             >
               {PRIORITY_LABEL[p]}
             </button>
@@ -212,7 +226,7 @@ export function NewTaskPage() {
       </div>
 
       <div className={card}>
-        <label className={label}>Prazo</label>
+        <label className={label}>Prazo de Conclusão</label>
         <input type="datetime-local" className={field} value={dueAt} onChange={(e) => setDueAt(e.target.value)} />
         <div className="mt-2 grid grid-cols-3 gap-1.5">
           <QuickDue label="+2 horas" onClick={() => setDueAt(toLocalInput(new Date(Date.now() + 2 * 3600 * 1000)))} />
@@ -221,23 +235,23 @@ export function NewTaskPage() {
         </div>
       </div>
 
-      <button type="button" onClick={() => setShowMore((v) => !v)} className="flex w-full items-center justify-between rounded-xl border border-line bg-white px-4 py-3 text-sm font-medium text-slate-700">
-        Mais detalhes
+      <button type="button" onClick={() => setShowMore((v) => !v)} className="flex w-full items-center justify-between rounded-xl border border-outline-variant bg-surface-container-lowest px-4 py-3 text-sm font-medium text-on-surface">
+        Instruções Técnicas
         <ChevronDown size={18} className={`transition ${showMore ? "rotate-180" : ""}`} />
       </button>
 
       {showMore && (
         <div className="space-y-3">
           <div className={card}>
-            <label className={label} htmlFor="nt-desc">Instruções / descrição</label>
-            <textarea id="nt-desc" rows={3} className="w-full rounded-lg border border-line bg-slate-50 p-3 text-sm outline-none focus:border-accent-600 focus:bg-white" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Detalhes operacionais do que precisa ser feito…" />
+            <label className={label} htmlFor="nt-desc">Checklist ou contexto</label>
+            <textarea id="nt-desc" rows={3} className="w-full rounded-lg border border-outline-variant bg-surface-container-low p-3 text-sm outline-none focus:border-primary focus:bg-surface-container-lowest" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Detalhes operacionais do que precisa ser feito…" />
           </div>
           <div className={card}>
-            <label className={label}>Origem do pedido</label>
+            <label className={label}>Origem do Pedido</label>
             <div className="flex flex-wrap gap-1.5">
               {taskOrigins.map((o) => (
                 <button type="button" key={o} onClick={() => setOrigin(origin === o ? "" : o)}
-                  className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${origin === o ? "border-accent-600 bg-accent-700 text-white" : "border-line bg-slate-50 text-slate-600"}`}>
+                  className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${origin === o ? "border-primary bg-primary-container text-on-primary" : "border-outline-variant bg-surface-container-low text-on-surface-variant"}`}>
                   {ORIGIN_LABEL[o]}
                 </button>
               ))}
@@ -245,14 +259,14 @@ export function NewTaskPage() {
           </div>
           <div className={`${card} grid grid-cols-1 gap-3`}>
             <div>
-              <label className={label} htmlFor="nt-team">Equipe</label>
+              <label className={label} htmlFor="nt-team">Equipe Responsável</label>
               <select id="nt-team" className={field} value={teamId} onChange={(e) => setTeamId(e.target.value)}>
                 <option value="">Sem equipe</option>
                 {(teams.data ?? []).map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
               </select>
             </div>
             <div>
-              <label className={label} htmlFor="nt-client">Cliente</label>
+              <label className={label} htmlFor="nt-client">Cliente Vinculado <span className="font-normal text-on-surface-variant">Opcional</span></label>
               <select id="nt-client" className={field} value={clientId} onChange={(e) => setClientId(e.target.value)}>
                 <option value="">Sem cliente</option>
                 {(clients.data ?? []).map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -262,11 +276,11 @@ export function NewTaskPage() {
         </div>
       )}
 
-      <div className="fixed inset-x-0 bottom-0 z-30 mx-auto max-w-lg border-t border-line bg-white/95 p-4 pb-safe backdrop-blur md:static md:border-0 md:bg-transparent md:p-0">
-        <button type="submit" disabled={create.isPending} className="w-full rounded-xl bg-accent-700 py-3 font-semibold text-white shadow-sm disabled:opacity-50">
-          {create.isPending ? "Salvando…" : "Criar tarefa"}
+      <div className="fixed inset-x-0 bottom-0 z-30 mx-auto max-w-lg border-t border-outline-variant bg-surface-container-lowest/95 p-4 pb-safe backdrop-blur md:static md:border-0 md:bg-transparent md:p-0">
+        <button type="submit" disabled={create.isPending} className="w-full rounded-xl bg-primary-container py-3 font-semibold text-on-primary shadow-sm disabled:opacity-50">
+          {create.isPending ? "Despachando…" : "Criar e Atribuir Tarefa"}
         </button>
-        <button type="button" onClick={() => nav(-1)} className="mt-1 w-full py-2 text-sm font-medium text-slate-500">Cancelar</button>
+        <button type="button" onClick={() => nav(-1)} className="mt-1 w-full py-2 text-sm font-medium text-on-surface-variant">Cancelar</button>
       </div>
     </form>
   );
@@ -274,7 +288,7 @@ export function NewTaskPage() {
 
 function QuickDue({ label, onClick }: { label: string; onClick: () => void }) {
   return (
-    <button type="button" onClick={onClick} className="rounded-lg border border-line bg-slate-50 py-1.5 text-xs text-slate-600 hover:bg-slate-100">
+    <button type="button" onClick={onClick} className="rounded-lg border border-outline-variant bg-surface-container-low py-1.5 text-xs text-on-surface-variant hover:bg-surface-container">
       {label}
     </button>
   );
@@ -320,83 +334,84 @@ export function TaskDetailPage() {
       <div className="flex flex-wrap items-center gap-1.5">
         <TaskStatusBadge status={t.status} />
         <PriorityBadge priority={t.priority} />
-        {t.clientName && <span className="rounded border border-line bg-slate-50 px-2 py-0.5 text-[11px] text-slate-600">{t.clientName}</span>}
-        {t.origin && <span className="rounded border border-line bg-slate-50 px-2 py-0.5 text-[11px] text-slate-600">Origem: {ORIGIN_LABEL[t.origin]}</span>}
+        {t.clientName && <span className="rounded border border-outline-variant bg-surface-container-low px-2 py-0.5 text-[11px] text-on-surface-variant">{t.clientName}</span>}
+        {t.origin && <span className="rounded border border-outline-variant bg-surface-container-low px-2 py-0.5 text-[11px] text-on-surface-variant">Origem: {ORIGIN_LABEL[t.origin]}</span>}
       </div>
 
       <div>
-        <Link to="/app/tasks" className="mb-1 inline-flex items-center gap-1 text-sm text-accent-700">
-          <ArrowLeft size={15} /> Tarefas
+        <Link to="/app/my-tasks" className="mb-1 inline-flex items-center gap-1 text-[13px] text-primary">
+          <ArrowLeft size={15} /> Minhas Tarefas
         </Link>
-        <h1 className="text-xl font-semibold leading-tight tracking-tight text-slate-900">{t.title}</h1>
+        <h1 className="text-xl font-semibold leading-tight tracking-tight text-on-surface">{t.title}</h1>
+        <p className="mt-1 text-[12px] text-on-surface-variant">Ordem de Serviço #OS-8492 · Estação PDV 01</p>
       </div>
 
       <div className="grid grid-cols-2 gap-2">
-        <div className="flex items-center gap-2 rounded-xl border border-line bg-white p-3 shadow-sm">
+        <div className="flex items-center gap-2 rounded-xl border border-outline-variant bg-surface-container-lowest p-3 shadow-sm">
           <AssigneeAvatar name={userName(t.assigneeId)} size={36} />
           <div className="min-w-0">
-            <span className="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">Responsável</span>
-            <p className="truncate text-sm font-medium text-slate-800">{userName(t.assigneeId)}</p>
+            <span className="block text-[10px] font-semibold uppercase tracking-wider text-on-surface-variant">Responsável</span>
+            <p className="truncate text-[13px] font-medium text-on-surface">{userName(t.assigneeId)}</p>
           </div>
         </div>
-        <div className="flex items-center gap-2 rounded-xl border border-line bg-white p-3 shadow-sm">
-          <span className="grid h-9 w-9 place-items-center rounded-lg bg-slate-100 text-accent-700"><Clock size={18} /></span>
+        <div className="flex items-center gap-2 rounded-xl border border-outline-variant bg-surface-container-lowest p-3 shadow-sm">
+          <span className="grid h-9 w-9 place-items-center rounded-lg bg-surface-container text-primary"><Clock size={18} /></span>
           <div className="min-w-0">
-            <span className="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">Prazo</span>
-            <p className={`truncate text-sm font-medium ${t.overdue ? "text-danger-700" : "text-slate-800"}`}>{dueLabel(t.dueAt, t.overdue)}</p>
+            <span className="block text-[10px] font-semibold uppercase tracking-wider text-on-surface-variant">Prazo Fatal</span>
+            <p className={`truncate text-sm font-medium ${t.overdue ? "text-error" : "text-on-surface"}`}>{dueLabel(t.dueAt, t.overdue)}</p>
           </div>
         </div>
       </div>
 
       <div className="flex flex-wrap gap-2">
         {t.status === "todo" && (
-          <button onClick={() => setStatus.mutate({ id: t.id, status: "in_progress" })} disabled={setStatus.isPending} className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-info-600 py-3 font-semibold text-white disabled:opacity-50">
+          <button onClick={() => setStatus.mutate({ id: t.id, status: "in_progress" })} disabled={setStatus.isPending} className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-primary py-3 font-semibold text-on-primary disabled:opacity-50">
             <Play size={18} /> Iniciar tarefa
           </button>
         )}
         {t.status === "in_progress" && (
-          <button onClick={() => setStatus.mutate({ id: t.id, status: "completed" })} disabled={setStatus.isPending} className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-accent-700 py-3 font-semibold text-white disabled:opacity-50">
-            <CheckCircle2 size={18} /> Marcar como concluída
+          <button onClick={() => setStatus.mutate({ id: t.id, status: "completed" })} disabled={setStatus.isPending} className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-primary-container py-3 font-semibold text-on-primary disabled:opacity-50">
+            <CheckCircle2 size={18} /> Concluir Tarefa
           </button>
         )}
         {(t.status === "todo" || t.status === "in_progress") && (
-          <button onClick={() => remind.mutate({ id: t.id })} disabled={remind.isPending} className="flex items-center justify-center gap-1.5 rounded-xl border border-line bg-white px-4 py-3 font-semibold text-slate-700">
-            <TriangleAlert size={16} /> Cobrar
+          <button onClick={() => remind.mutate({ id: t.id })} disabled={remind.isPending} className="flex items-center justify-center gap-1.5 rounded-xl border border-outline-variant bg-surface-container-lowest px-4 py-3 font-semibold text-on-surface">
+            <TriangleAlert size={16} /> Cobrar /
           </button>
         )}
         {t.status === "completed" && (
-          <button onClick={() => setReopenOpen(true)} className="flex items-center justify-center gap-1.5 rounded-xl border border-line bg-white px-4 py-3 font-semibold text-slate-700">
+          <button onClick={() => setReopenOpen(true)} className="flex items-center justify-center gap-1.5 rounded-xl border border-outline-variant bg-surface-container-lowest px-4 py-3 font-semibold text-on-surface">
             <RotateCcw size={16} /> Reabrir tarefa
           </button>
         )}
       </div>
 
       {reopenOpen && (
-        <div className="rounded-xl border border-line bg-white p-3 shadow-sm">
-          <label className="mb-1 block text-sm font-medium text-slate-800" htmlFor="reopen-reason">Motivo da reabertura *</label>
-          <input id="reopen-reason" className="h-10 w-full rounded-lg border border-line bg-slate-50 px-3 text-sm" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Ex.: Cliente solicitou nova ação." />
+        <div className="rounded-xl border border-outline-variant bg-surface-container-lowest p-3 shadow-sm">
+          <label className="mb-1 block text-sm font-medium text-on-surface" htmlFor="reopen-reason">Motivo da reabertura *</label>
+          <input id="reopen-reason" className="h-10 w-full rounded-lg border border-outline-variant bg-surface-container-low px-3 text-sm" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Ex.: Cliente solicitou nova ação." />
           <div className="mt-2 flex gap-2">
-            <button onClick={() => reopen.mutate({ id: t.id, reason })} disabled={reopen.isPending || !reason.trim()} className="rounded-lg bg-accent-700 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">Confirmar reabertura</button>
-            <button onClick={() => setReopenOpen(false)} className="rounded-lg border border-line px-4 py-2 text-sm font-medium">Cancelar</button>
+            <button onClick={() => reopen.mutate({ id: t.id, reason })} disabled={reopen.isPending || !reason.trim()} className="rounded-lg bg-primary-container px-4 py-2 text-sm font-semibold text-on-primary disabled:opacity-50">Confirmar reabertura</button>
+            <button onClick={() => setReopenOpen(false)} className="rounded-lg border border-outline-variant px-4 py-2 text-sm font-medium">Cancelar</button>
           </div>
         </div>
       )}
 
       {t.description && (
-        <section className="rounded-xl border border-line bg-white p-4 shadow-sm">
-          <h2 className="mb-2 flex items-center gap-1.5 text-[15px] font-semibold text-slate-900"><Paperclip size={16} className="text-accent-600" /> Descrição</h2>
-          <p className="whitespace-pre-wrap rounded-lg bg-slate-50 p-3 text-sm leading-relaxed text-slate-700">{t.description}</p>
+        <section className="rounded-xl border border-outline-variant bg-surface-container-lowest p-4 shadow-sm">
+          <h2 className="mb-2 flex items-center gap-1.5 text-[15px] font-semibold text-on-surface"><Paperclip size={16} className="text-primary" /> Descrição Operacional</h2>
+          <p className="whitespace-pre-wrap rounded-lg bg-surface-container-low p-3 text-sm leading-relaxed text-on-surface">{t.description}</p>
         </section>
       )}
 
       <section className="space-y-2">
-        <h2 className="flex items-center gap-1.5 text-[15px] font-semibold text-slate-900"><History size={16} className="text-cyan-600" /> Timeline operacional</h2>
+        <h2 className="flex items-center gap-1.5 text-[15px] font-semibold text-on-surface"><History size={16} className="text-secondary" /> Timeline Operacional <span className="ml-auto text-[11px] font-medium uppercase tracking-[.05em] text-secondary">Tempo Real</span></h2>
         <CommentTimeline comments={t.comments} />
-        <form className="rounded-xl border border-line bg-white p-2.5 shadow-sm" onSubmit={(e) => { e.preventDefault(); if (comment.trim()) { addComment.mutate({ id: t.id, body: comment }); setComment(""); } }}>
-          <textarea rows={2} className="w-full resize-none rounded-lg bg-slate-50 p-2 text-sm outline-none" value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Adicionar uma atualização operacional…" aria-label="Adicionar observação" />
+        <form className="rounded-xl border border-outline-variant bg-surface-container-lowest p-2.5 shadow-sm" onSubmit={(e) => { e.preventDefault(); if (comment.trim()) { addComment.mutate({ id: t.id, body: comment }); setComment(""); } }}>
+          <textarea rows={2} className="w-full resize-none rounded-lg bg-surface-container-low p-2 text-sm outline-none" value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Adicionar uma atualização operacional…" aria-label="Adicionar observação" />
           <div className="mt-1.5 flex items-center justify-between">
-            <span className="flex items-center gap-1 text-xs text-slate-400"><AttachmentIcon /> anexe abaixo</span>
-            <button className="flex items-center gap-1.5 rounded-lg bg-cyan-600 px-3 py-1.5 text-sm font-semibold text-white">
+            <span className="flex items-center gap-1 text-xs text-on-surface-variant"><AttachmentIcon /> Anexar arquivo ou foto</span>
+            <button className="flex items-center gap-1.5 rounded-md bg-primary-container px-3 py-1.5 text-[13px] font-semibold text-on-primary">
               <Send size={15} /> Enviar
             </button>
           </div>
@@ -405,17 +420,17 @@ export function TaskDetailPage() {
 
       <AttachmentSection taskId={t.id} attachments={t.attachments} />
 
-      <section className="rounded-xl border border-line bg-white p-4 shadow-sm">
+      <section className="rounded-xl border border-outline-variant bg-surface-container-lowest p-4 shadow-sm">
         <details>
           <summary className="flex cursor-pointer list-none items-center justify-between">
-            <span className="flex items-center gap-1.5 text-[15px] font-semibold text-slate-900"><History size={16} className="text-slate-400" /> Histórico de auditoria</span>
-            <ChevronDown size={18} className="text-slate-400" />
+            <span className="flex items-center gap-1.5 text-[15px] font-semibold text-on-surface"><History size={16} className="text-outline" /> Histórico de auditoria</span>
+            <ChevronDown size={18} className="text-outline" />
           </summary>
           <ul className="mt-3 space-y-2">
             {events.data?.map((ev) => (
-              <li key={ev.id} className="flex items-start gap-2 text-sm text-slate-600">
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400" />
-                <span><strong className="font-semibold text-slate-800">{userName(ev.actorId)}</strong> — {ev.eventType} · <span className="text-slate-400 tnum">{formatDateTime(ev.createdAt)}</span></span>
+              <li key={ev.id} className="flex items-start gap-2 text-sm text-on-surface-variant">
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-outline" />
+                <span><strong className="font-semibold text-on-surface">{userName(ev.actorId)}</strong> — {ev.eventType} · <span className="text-outline tnum">{formatDateTime(ev.createdAt)}</span></span>
               </li>
             ))}
           </ul>
@@ -463,27 +478,27 @@ function AttachmentSection({ taskId, attachments }: {
   }
 
   return (
-    <section className="rounded-xl border border-line bg-white p-4 shadow-sm">
-      <h2 className="mb-2 flex items-center gap-1.5 text-[15px] font-semibold text-slate-900"><Paperclip size={16} className="text-accent-600" /> Evidências e anexos ({attachments.length})</h2>
+    <section className="rounded-xl border border-outline-variant bg-surface-container-lowest p-4 shadow-sm">
+      <h2 className="mb-2 flex items-center gap-1.5 text-[15px] font-semibold text-on-surface"><Paperclip size={16} className="text-primary" /> Evidências e anexos ({attachments.length})</h2>
       {attachments.length > 0 ? (
         <ul className="space-y-2">
           {attachments.map((a) => (
-            <li key={a.id} className="flex items-center justify-between gap-2 rounded-lg bg-slate-50 p-2.5">
+            <li key={a.id} className="flex items-center justify-between gap-2 rounded-lg bg-surface-container-low p-2.5">
               <span className="min-w-0">
-                <span className="block truncate text-sm font-medium text-slate-800">{a.fileName}</span>
-                <span className="block text-xs text-slate-500">{a.mimeType} · {formatBytes(a.fileSize)}</span>
+                <span className="block truncate text-sm font-medium text-on-surface">{a.fileName}</span>
+                <span className="block text-xs text-on-surface-variant">{a.mimeType} · {formatBytes(a.fileSize)}</span>
               </span>
-              <a href={a.fileUrl} target="_blank" rel="noreferrer" className="shrink-0 rounded-lg border border-line bg-white px-3 py-1.5 text-xs font-semibold text-accent-700">Abrir</a>
+              <a href={a.fileUrl} target="_blank" rel="noreferrer" className="shrink-0 rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-1.5 text-xs font-semibold text-primary">Abrir</a>
             </li>
           ))}
         </ul>
       ) : (
-        <p className="text-sm text-slate-500">Nenhuma evidência anexada.</p>
+        <p className="text-sm text-on-surface-variant">Nenhuma evidência anexada.</p>
       )}
       <div className="mt-3 space-y-2">
         <input type="file" onChange={(e) => setFile(e.target.files?.[0] ?? null)} className="block w-full text-sm" aria-label="Escolher arquivo" />
-        {file && <p className="text-xs text-slate-500">{file.name} · {file.type || "tipo desconhecido"} · {formatBytes(file.size)}</p>}
-        <button onClick={send} disabled={!file || sending || attach.isPending} className="rounded-lg border border-line px-4 py-2 text-sm font-semibold disabled:opacity-50">
+        {file && <p className="text-xs text-on-surface-variant">{file.name} · {file.type || "tipo desconhecido"} · {formatBytes(file.size)}</p>}
+        <button onClick={send} disabled={!file || sending || attach.isPending} className="rounded-lg border border-outline-variant px-4 py-2 text-sm font-semibold disabled:opacity-50">
           {sending || attach.isPending ? "Enviando…" : "Anexar evidência"}
         </button>
       </div>

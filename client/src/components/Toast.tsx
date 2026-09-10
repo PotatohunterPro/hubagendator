@@ -33,8 +33,8 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           <p
             key={t.id}
             role="status"
-            className={`pointer-events-auto w-full rounded-xl px-4 py-3 text-center text-sm font-semibold text-white shadow-xl ${
-              t.kind === "success" ? "bg-success-700" : "bg-danger-700"
+            className={`pointer-events-auto w-full rounded-lg px-4 py-3 text-center text-[13px] font-semibold shadow-tier-3 ${
+            t.kind === "success" ? "bg-secondary-fixed text-on-secondary-fixed" : "bg-error text-on-error"
             }`}
           >
             {t.message}

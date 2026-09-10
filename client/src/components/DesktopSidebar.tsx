@@ -23,8 +23,8 @@ const ITEMS = [
 
 export function DesktopSidebar() {
   return (
-    <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 border-r border-line bg-white p-3 md:block">
-      <div className="mb-4 flex items-center px-2 pt-1">
+    <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 border-r border-outline-variant bg-surface-container-low p-4 md:block">
+      <div className="mb-7 flex items-center border-b border-outline-variant px-2 pb-4 pt-1">
         <img src="/logo.png" alt="HubAgendator" className="h-7 w-auto object-contain" />
       </div>
       <nav aria-label="Navegação desktop">
@@ -35,7 +35,7 @@ export function DesktopSidebar() {
                 to={to}
                 end={to === "/app"}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 rounded-lg px-3 py-2 text-sm ${isActive ? "bg-accent-50 font-semibold text-accent-700" : "text-slate-600 hover:bg-slate-100"}`
+                  `flex items-center gap-3 rounded-md px-3 py-2.5 text-[13px] ${isActive ? "bg-primary-fixed font-semibold text-on-primary-fixed" : "text-on-surface-variant hover:bg-surface-container"}`
                 }
               >
                 <Icon size={18} />

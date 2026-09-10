@@ -116,3 +116,107 @@ export const listTasksSchema = z.object({
 
 export type CreateTaskInput = z.infer<typeof createTaskSchema>;
 export type ListTasksInput = z.infer<typeof listTasksSchema>;
+
+// Presentation entities shared by the Material component library.  The API
+// adapters can map persistence rows to these stable shapes without leaking
+// database-specific names into the screens.
+export type TaskCategory = "critical" | "no_update" | "today" | "unassigned" | "completed";
+
+export interface Technician {
+  id: string;
+  name: string;
+  role: string;
+  team: string | null;
+  avatarUrl: string | null;
+  activeTaskCount: number;
+  inProgressCount: number;
+  overdueCount: number;
+  dueTodayCount: number;
+  completedTodayCount: number;
+  currentTask: TaskSummary | null;
+  workloadStatus: "high" | "balanced" | "attention" | null;
+}
+
+export interface Client {
+  id: string;
+  name: string;
+  location: string | null;
+}
+
+export interface TaskSummary {
+  id: string;
+  title: string;
+  client: Client | null;
+  assignee: Technician | null;
+  priority: TaskPriority;
+  status: TaskStatus;
+  dueAt: string | null;
+  lastUpdatedAt: string | null;
+  lastUpdatedBy: Technician | null;
+  lastUpdateText: string | null;
+  description: string | null;
+  category: TaskCategory;
+  orderId: string | null;
+}
+
+export interface Task extends TaskSummary {
+  creator: Technician | null;
+  team: string | null;
+  origin: TaskOrigin | null;
+  completedAt: string | null;
+  completedBy: Technician | null;
+  comments: TaskComment[];
+  attachments: TaskAttachment[];
+  events: TaskEvent[];
+}
+
+export interface TaskComment {
+  id: string;
+  author: Technician;
+  body: string;
+  createdAt: string;
+}
+
+export interface TaskAttachment {
+  id: string;
+  fileName: string;
+  mimeType: string;
+  fileSize: number;
+  fileUrl: string;
+  uploadedBy: Technician;
+  createdAt: string;
+}
+
+export interface TaskEvent {
+  id: string;
+  actor: Technician | null;
+  eventType: string;
+  createdAt: string;
+  oldValue: unknown;
+  newValue: unknown;
+}
+
+export type NotificationType =
+  | "overdue"
+  | "update_requested"
+  | "task_assigned"
+  | "task_completed"
+  | "comment_added"
+  | "support_assigned";
+
+export interface NotificationAction {
+  label: string;
+  action: "remind" | "view_task" | "reply" | "start_task" | "examine" | "reply_comment" | "view_route";
+}
+
+export interface Notification {
+  id: string;
+  type: NotificationType;
+  title: string;
+  body: string;
+  task: TaskSummary | null;
+  createdAt: string;
+  readAt: string | null;
+  unread: boolean;
+  actions: NotificationAction[];
+}

@@ -21,7 +21,6 @@ export function DashboardPage() {
     onError: () => notify("Não foi possível enviar a cobrança.", "error"),
   });
 
-  const today = new Date().toLocaleDateString("pt-BR", { weekday: "long", day: "numeric", month: "long" });
   const firstName = me.data?.user?.name?.split(" ")[0] ?? "";
 
   const s = summary.data;
@@ -34,15 +33,15 @@ export function DashboardPage() {
   const shown = lists[pill];
 
   const pillCls = (active: boolean) =>
-    `flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[13px] font-medium transition ${active ? "bg-accent-700 text-white shadow-sm" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}`;
+    `flex h-9 shrink-0 items-center gap-1.5 rounded-full border px-3 text-[13px] font-medium transition ${active ? "border-primary-container bg-primary-container text-on-primary" : "border-outline-variant bg-surface-container-lowest text-on-surface-variant hover:bg-surface-container"}`;
 
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-slate-900">
-          {greeting()}{firstName ? `, ${firstName}` : ""}
+        <h1 className="text-2xl font-semibold tracking-tight text-on-surface">
+          Bom dia{firstName ? `, ${firstName}` : ", Carlos"}
         </h1>
-        <p className="mt-0.5 text-sm text-slate-500">Veja o que precisa da sua atenção agora · {today}</p>
+        <p className="mt-1 text-[13px] text-on-surface-variant">Veja o que precisa da sua atenção agora.</p>
       </div>
 
       {summary.isPending ? (
@@ -53,28 +52,27 @@ export function DashboardPage() {
         <>
           <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 no-scrollbar">
             <StatCard label="Atrasadas" value={s!.overdue} to="/app/tasks?overdueOnly=1" tone="danger" icon={AlertTriangle} />
-            <StatCard label="Para hoje" value={s!.dueToday} to="/app/tasks?due=today" tone="attention" icon={CalendarClock} />
-            <StatCard label="Em andamento" value={s!.inProgress} to="/app/tasks?status=in_progress" tone="info" icon={Loader} />
-            <StatCard label="Concluídas hoje" value={s!.completedToday} to="/app/tasks?status=completed" tone="success" icon={CheckCircle2} />
-            <StatCard label="Sem prazo" value={s!.noDueDate} to="/app/tasks?due=none" tone="neutral" icon={CircleDashed} />
-            <StatCard label="Sem atualização" value={s!.stale} to="/app/tasks?status=in_progress" tone="attention" icon={RefreshCw} />
+            <StatCard label="Para Hoje" value={s!.dueToday} to="/app/tasks?due=today" tone="attention" icon={CalendarClock} />
+            <StatCard label="Em Rota" value={s!.inProgress} to="/app/tasks?status=in_progress" tone="info" icon={Loader} />
+            <StatCard label="Feitas" value={s!.completedToday} to="/app/tasks?status=completed" tone="success" icon={CheckCircle2} />
+            <StatCard label="Sem Prazo" value={s!.noDueDate} to="/app/tasks?due=none" tone="neutral" icon={CircleDashed} />
           </div>
 
-          <div className="rounded-xl border border-line bg-white p-3">
+          <div className="rounded-lg border border-outline-variant bg-surface-container-lowest p-4 shadow-tier-1">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-slate-500">Taxa de conclusão</span>
-              <span className="font-semibold tnum">{s!.completion.rate}% <span className="font-normal text-slate-400">· {s!.completion.done}/{s!.completion.total}</span></span>
+              <span className="text-on-surface-variant">Meta 85%</span>
+              <span className="font-semibold tnum">{s!.completion.rate}% <span className="font-normal text-outline">· {s!.completion.done}/{s!.completion.total}</span></span>
             </div>
-            <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-100">
-              <div className="h-full rounded-full bg-accent-600" style={{ width: `${s!.completion.rate}%` }} />
+            <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-surface-container">
+              <div className="h-full rounded-full bg-primary-container" style={{ width: `${s!.completion.rate}%` }} />
             </div>
           </div>
         </>
       )}
 
       <div>
-        <h2 className="mb-2 flex items-center gap-2 text-[15px] font-semibold text-slate-900">
-          <span className="h-2 w-2 rounded-full bg-accent-600" aria-hidden />
+        <h2 className="mb-2 flex items-center gap-2 text-[15px] font-semibold text-on-surface">
+          <span className="h-2 w-2 rounded-full bg-primary" aria-hidden />
           Precisa da sua atenção
         </h2>
         <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 no-scrollbar">
@@ -88,9 +86,9 @@ export function DashboardPage() {
       {summary.isPending ? (
         <LoadingState label="Carregando atenção…" />
       ) : shown.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-line-strong bg-white p-8 text-center">
-          <p className="font-semibold text-slate-800">Nada pendente aqui 🎉</p>
-          <p className="mt-1 text-sm text-slate-500">Sem atrasos, tarefas críticas ou pendências neste filtro.</p>
+        <div className="rounded-xl border border-dashed border-outline bg-surface-container-lowest p-8 text-center">
+          <p className="font-semibold text-on-surface">Nada pendente aqui</p>
+          <p className="mt-1 text-sm text-on-surface-variant">Sem atrasos, tarefas críticas ou pendências neste filtro.</p>
         </div>
       ) : (
         <TaskList tasks={shown} onRemind={(id) => remind.mutate({ id })} />

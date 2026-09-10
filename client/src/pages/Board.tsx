@@ -8,9 +8,9 @@ import { AssigneeAvatar, ErrorState, LoadingState, PriorityBadge } from "../comp
 import { useToast } from "../components/Toast.js";
 
 const COLUMNS: { status: Exclude<TaskStatus, "archived">; label: string; bar: string }[] = [
-  { status: "todo", label: "A fazer", bar: "bg-slate-400" },
-  { status: "in_progress", label: "Em andamento", bar: "bg-info-600" },
-  { status: "completed", label: "Concluídas", bar: "bg-success-600" },
+  { status: "todo", label: "A fazer", bar: "bg-outline" },
+  { status: "in_progress", label: "Em andamento", bar: "bg-primary" },
+  { status: "completed", label: "Concluídas", bar: "bg-secondary" },
 ];
 
 type Item = {
@@ -54,17 +54,17 @@ export function BoardPage() {
     <div>
       <div className="mb-4 flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-semibold tracking-tight text-slate-900">Quadro</h1>
-          <p className="mt-0.5 text-sm text-slate-500">Arraste os cards para mudar o status.</p>
+          <h1 className="text-xl font-semibold tracking-tight text-on-surface">Quadro</h1>
+          <p className="mt-0.5 text-sm text-on-surface-variant">Arraste os cards para mudar o status.</p>
         </div>
-        <span className="hidden items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs text-slate-500 md:flex">
+        <span className="hidden items-center gap-1.5 rounded-full bg-surface-container px-3 py-1 text-xs text-on-surface-variant md:flex">
           <Monitor size={14} /> Somente desktop
         </span>
       </div>
 
-      <div className="rounded-xl border border-dashed border-line-strong bg-white p-3 text-center text-sm text-slate-500 md:hidden">
+      <div className="rounded-xl border border-dashed border-outline bg-surface-container-lowest p-3 text-center text-sm text-on-surface-variant md:hidden">
         No celular use a lista de tarefas e as ações rápidas. O arrastar está disponível no desktop.
-        <div className="mt-2"><Link to="/app/tasks" className="font-semibold text-accent-700">Ir para tarefas</Link></div>
+        <div className="mt-2"><Link to="/app/tasks" className="font-semibold text-primary">Ir para tarefas</Link></div>
       </div>
 
       <div className="hidden gap-3 md:grid md:grid-cols-3">
@@ -73,13 +73,13 @@ export function BoardPage() {
             key={col.status}
             onDragOver={(e) => e.preventDefault()}
             onDrop={() => { if (dragging) { setStatus.mutate({ id: dragging, status: col.status, reason: col.status === "in_progress" ? "Movido no quadro" : undefined }); setDragging(null); } }}
-            className="flex min-h-[300px] flex-col rounded-xl border border-line bg-slate-50/60"
+            className="flex min-h-[300px] flex-col rounded-xl border border-outline-variant bg-surface-container-low/60"
           >
-            <div className="flex items-center justify-between border-b border-line px-3 py-2">
-              <span className="flex items-center gap-2 text-sm font-semibold text-slate-800">
+            <div className="flex items-center justify-between border-b border-outline-variant px-3 py-2">
+              <span className="flex items-center gap-2 text-sm font-semibold text-on-surface">
                 <span className={`h-2 w-2 rounded-full ${col.bar}`} /> {col.label}
               </span>
-              <span className="text-xs text-slate-400 tnum">{col.items.length}</span>
+              <span className="text-xs text-outline tnum">{col.items.length}</span>
             </div>
             <ul className="flex flex-1 flex-col gap-2 p-2">
               {col.items.map((t) => (
@@ -88,20 +88,20 @@ export function BoardPage() {
                   draggable
                   onDragStart={() => setDragging(t.id)}
                   onDragEnd={() => setDragging(null)}
-                  className={`cursor-grab rounded-lg border border-line bg-white p-2.5 shadow-sm active:cursor-grabbing ${dragging === t.id ? "opacity-50" : ""}`}
+                  className={`cursor-grab rounded-lg border border-outline-variant bg-surface-container-lowest p-2.5 shadow-sm active:cursor-grabbing ${dragging === t.id ? "opacity-50" : ""}`}
                 >
                   <div className="flex items-start justify-between gap-1">
-                    <Link to={`/app/tasks/${t.id}`} className="line-clamp-2 text-sm font-medium text-slate-900 hover:text-accent-700">{t.title}</Link>
-                    <GripVertical size={15} className="mt-0.5 shrink-0 text-slate-300" />
+                    <Link to={`/app/tasks/${t.id}`} className="line-clamp-2 text-sm font-medium text-on-surface hover:text-primary">{t.title}</Link>
+                    <GripVertical size={15} className="mt-0.5 shrink-0 text-outline-variant" />
                   </div>
-                  <div className="mt-1.5 flex items-center justify-between gap-2 text-[11px] text-slate-500">
+                  <div className="mt-1.5 flex items-center justify-between gap-2 text-[11px] text-on-surface-variant">
                     <span className="flex items-center gap-1"><AssigneeAvatar name={userName(t.assigneeId)} size={18} /> {userName(t.assigneeId)}</span>
-                    <span className={t.overdue ? "font-semibold text-danger-700" : ""}>{dueLabel(t.dueAt, t.overdue ?? false)}</span>
+                    <span className={t.overdue ? "font-semibold text-error" : ""}>{dueLabel(t.dueAt, t.overdue ?? false)}</span>
                   </div>
                   <div className="mt-1.5"><PriorityBadge priority={t.priority} /></div>
                 </li>
               ))}
-              {col.items.length === 0 && <li className="rounded-lg border border-dashed border-line px-3 py-6 text-center text-xs text-slate-400">Solte um card aqui</li>}
+              {col.items.length === 0 && <li className="rounded-lg border border-dashed border-outline-variant px-3 py-6 text-center text-xs text-outline">Solte um card aqui</li>}
             </ul>
           </div>
         ))}

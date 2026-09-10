@@ -1,126 +1,65 @@
 @import "tailwindcss";
 
-/* Tokens semânticos — identidade "Hub Precision Operations" (ux-teste/DESIGN.md).
-   Azul institucional + ciano técnico; hex hardcoded só existe aqui.
-   `accent` = cor de marca/primária (azul). Semânticos: danger/attention/info/success. */
+/* Material 3 palette from DESIGN_MAPPING.md. Keep semantic states constrained
+   to error (critical), primary (active) and secondary-fixed (completed). */
 @theme {
-  /* Marca (azul institucional) */
-  --color-accent-50: #eef4ff;
-  --color-accent-100: #d7e2ff;
-  --color-accent-200: #acc7ff;
-  --color-accent-600: #0056b3;
-  --color-accent-700: #003f87;
-  --color-accent-800: #001a40;
-
-  /* Ciano técnico (secundário) */
-  --color-cyan-50: #e6f5ff;
-  --color-cyan-100: #c6e7ff;
-  --color-cyan-600: #00658d;
-  --color-cyan-700: #004b69;
-
-  /* Semânticos */
-  --color-danger-50: #fef2f2;
-  --color-danger-100: #fee2e2;
-  --color-danger-200: #fca5a5;
-  --color-danger-600: #ef4444;
-  --color-danger-700: #b91c1c;
-  --color-danger-800: #991b1b;
-
-  --color-attention-50: #fffbeb;
-  --color-attention-100: #fef3c7;
-  --color-attention-200: #fcd34d;
-  --color-attention-700: #b45309;
-  --color-attention-800: #92400e;
-
-  --color-info-50: #eff6ff;
-  --color-info-100: #dbeafe;
-  --color-info-200: #93c5fd;
-  --color-info-600: #2563eb;
-  --color-info-700: #1d4ed8;
-  --color-info-800: #1e40af;
-
-  --color-success-50: #ecfdf5;
-  --color-success-100: #d1fae5;
-  --color-success-200: #6ee7b7;
-  --color-success-600: #10b981;
-  --color-success-700: #047857;
-  --color-success-800: #065f46;
-
-  /* Superfícies e neutros */
-  --color-canvas: #f8fafc;
-  --color-surface: #ffffff;
-  --color-subpanel: #f1f5f9;
-  --color-line: #e2e8f0;
-  --color-line-strong: #cbd5e1;
-
-  /* Tipografia */
-  --font-sans: "Geist", "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --color-surface: #faf8ff;
+  --color-background: #faf8ff;
+  --color-surface-dim: #d2d9f4;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f2f3ff;
+  --color-surface-container: #eaedff;
+  --color-surface-container-high: #e2e7ff;
+  --color-surface-container-highest: #dae2fd;
+  --color-on-surface: #131b2e;
+  --color-on-surface-variant: #424752;
+  --color-outline: #727784;
+  --color-outline-variant: #c2c6d4;
+  --color-inverse-surface: #283044;
+  --color-inverse-on-surface: #eef0ff;
+  --color-primary: #003f87;
+  --color-primary-container: #0056b3;
+  --color-on-primary: #ffffff;
+  --color-on-primary-container: #bbd0ff;
+  --color-primary-fixed: #d7e2ff;
+  --color-primary-fixed-dim: #acc7ff;
+  --color-on-primary-fixed: #001a40;
+  --color-secondary: #00658d;
+  --color-secondary-container: #41befd;
+  --color-on-secondary: #ffffff;
+  --color-secondary-fixed: #c6e7ff;
+  --color-secondary-fixed-dim: #81cfff;
+  --color-on-secondary-fixed: #001e2d;
+  --color-tertiary: #00399d;
+  --color-tertiary-container: #004ecf;
+  --color-on-tertiary: #ffffff;
+  --color-error: #ba1a1a;
+  --color-error-container: #ffdad6;
+  --color-on-error: #ffffff;
+  --color-on-error-container: #93000a;
+  --font-sans: "Geist", "Inter", ui-sans-serif, system-ui, sans-serif;
+  --shadow-tier-1: 0 1px 2px 0 rgba(15, 23, 42, 0.04);
+  --shadow-tier-2: 0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 2px 4px -2px rgba(15, 23, 42, 0.05);
+  --shadow-tier-3: 0 20px 25px -5px rgba(15, 23, 42, 0.12), 0 8px 10px -6px rgba(15, 23, 42, 0.06);
 }
 
-:root {
-  color-scheme: light;
-}
-
-html {
-  font-family: var(--font-sans);
-}
-
+:root { color-scheme: light; }
+html { font-family: var(--font-sans); }
 body {
-  background-color: var(--color-canvas);
-  color: #0f172a;
+  margin: 0;
+  background: var(--color-surface);
+  color: var(--color-on-surface);
   -webkit-font-smoothing: antialiased;
 }
 
-/* Números tabulares para timestamps e contagens (DESIGN.md). */
-.tnum {
-  font-variant-numeric: tabular-nums;
-}
-
-:focus-visible {
-  outline: 2px solid var(--color-accent-600);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation: none !important;
-    transition: none !important;
-  }
-}
-
-.touch-target {
-  min-height: 44px;
-  min-width: 44px;
-}
-
-/* Esconde barra de rolagem em faixas horizontais (pills) sem travar o scroll. */
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-.skeleton {
-  @apply rounded-xl bg-slate-200;
-  animation: skeleton-pulse 1.4s ease-in-out infinite;
-}
-
-@keyframes skeleton-pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.45;
-  }
-}
-
-/* Safe areas iPhone */
-.pb-safe {
-  padding-bottom: env(safe-area-inset-bottom);
-}
+button, input, textarea, select { font: inherit; }
+button { cursor: pointer; }
+.tnum { font-variant-numeric: tabular-nums; }
+.touch-target { min-height: 44px; min-width: 44px; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+.skeleton { border-radius: 0.75rem; background: var(--color-surface-container-high); animation: skeleton-pulse 1.4s ease-in-out infinite; }
+@keyframes skeleton-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
+:focus-visible { outline: 2px solid var(--color-secondary-container); outline-offset: 2px; border-radius: 4px; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
