@@ -39,3 +39,18 @@ Todas as escolhas abaixo seguem o plano; divergências temporárias do esqueleto
 - Anexos: `POST /uploads` (multer, 10MB, allowlist imagens/pdf/docs/zip, exige `x-user-id`, dev grava em `server/uploads/` servido em `/files`) + `tasks.addAttachment` (só metadados no PG + evento). Produção troca o destino por object storage sem mudar a API. Exceção documentada ao "só tRPC": multipart binário não cabe no tRPC — o registro continua via `addAttachment`.
 - Minhas tarefas em grupos (Atrasadas/Hoje/Em andamento/Próximas/Concluídas) com `isDueToday` em `lib/format.ts`.
 - 30 testes verdes (6 shared + 24 server, incluindo origem, cobrança e anexos).
+
+## Integração do visual `ux-teste` (Hub Precision Operations)
+
+- Identidade trocada de verde para **azul institucional** (`#003f87`/`#0056b3`) + ciano técnico, em `client/src/index.css` (`accent` = marca azul; `cyan`; semânticos danger/attention/info/success). Nenhum hex hardcoded nos componentes.
+- `AppShell`/`MobileBottomNav`/`DesktopSidebar` refeitos: cabeçalho com sino + badge de não lidas, bottom nav de 4 itens + FAB "Nova tarefa", sidebar com "Quadro".
+- `TaskCard` com **barra lateral semântica de 4px**, chips com borda, prazo relativo + objetivo; ações rápidas "Cobrar" no desktop.
+- Painel: cards de indicador horizontais (Atrasadas/Para hoje/Em andamento/Concluídas hoje/Sem prazo/Sem atualização) clicáveis + taxa de conclusão + pills "Precisa da sua atenção".
+- Minhas tarefas: pills (Todos/Atrasadas/Em andamento/Concluídas) + grupos por urgência.
+- Criar: responsáveis reais (`organization.getMembers`) em cards com iniciais, prioridade em pills, origem, prazo com atalhos, "Mais detalhes" (descrição/equipe/cliente).
+- Detalhe: ribbon de status, bento responsável/prazo, ação primária por status, reabertura com motivo, timeline, anexos, histórico de auditoria recolhível.
+- Notificações reais agrupadas por categoria + marcar lida/todas; Equipe com `teams.workload` (contagens por membro, sem ranking); Clientes com busca/cadastro/tarefas.
+- Kanban `/app/board` (desktop, drag-and-drop nativo com update otimista e rollback; mobile usa listas).
+- **Auth sem fallback silencioso**: `createContext` retorna `user=null` sem `x-user-id` válido; procedures protegidas respondem 401. Cliente envia header via `lib/session.ts`. Login funcional em DEV (personas gated por `import.meta.env.DEV`) e explicitamente indisponível em produção até integrar o provedor real.
+- Não copiado: dados fictícios, Material Symbols, Tailwind CDN, imagens externas, "em rota", checklist/barra de progresso inexistentes.
+- **Logo HUB**: `ux-teste/.../logo.png/screen.png` (1485×538) copiada para `client/public/logo.png`; usada no cabeçalho, sidebar, login, favicon e manifest PWA (theme `#003f87`).

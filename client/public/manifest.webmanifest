@@ -1,14 +1,14 @@
 {
-  "name": "HubAgendor",
-  "short_name": "HubAgendor",
-  "description": "Gestão operacional mobile-first: tarefas, equipe e prazos.",
+  "name": "HubAgendator",
+  "short_name": "HubAgendator",
+  "description": "Gestão operacional interna: tarefas, equipe e prazos.",
   "start_url": "/app",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#ffffff",
-  "theme_color": "#16a34a",
+  "background_color": "#f8fafc",
+  "theme_color": "#003f87",
   "icons": [
-    { "src": "/icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+    { "src": "/logo.png", "sizes": "1485x538", "type": "image/png", "purpose": "any" }
   ]
 }

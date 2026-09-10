@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><title>Nova Tarefa | HubAgendator</title><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "tertiary-fixed": "#dbe1ff", "surface-bright": "#faf8ff", "on-secondary": "#ffffff", "on-tertiary": "#ffffff", "primary-fixed": "#d7e2ff", "error-container": "#ffdad6", "on-tertiary-fixed": "#00174b", "secondary": "#00658d", "secondary-container": "#41befd", "error": "#ba1a1a", "surface-variant": "#dae2fd", "surface-container": "#eaedff", "surface-container-highest": "#dae2fd", "surface-container-lowest": "#ffffff", "secondary-fixed-dim": "#81cfff", "primary-container": "#0056b3", "on-primary": "#ffffff", "on-primary-fixed-variant": "#004491", "outline-variant": "#c2c6d4", "surface-tint": "#115cb9", "tertiary": "#00399d", "surface": "#faf8ff", "outline": "#727784", "on-primary-container": "#bbd0ff", "inverse-surface": "#283044", "on-secondary-container": "#004b69", "surface-container-high": "#e2e7ff", "on-error-container": "#93000a", "background": "#faf8ff", "on-tertiary-fixed-variant": "#003ea8", "on-error": "#ffffff", "on-background": "#131b2e", "on-primary-fixed": "#001a40", "on-surface-variant": "#424752", "inverse-on-surface": "#eef0ff", "on-secondary-fixed": "#001e2d", "on-surface": "#131b2e", "secondary-fixed": "#c6e7ff", "inverse-primary": "#acc7ff", "tertiary-fixed-dim": "#b4c5ff", "primary-fixed-dim": "#acc7ff", "on-tertiary-container": "#c1cfff", "on-secondary-fixed-variant": "#004c6b", "surface-dim": "#d2d9f4", "primary": "#003f87", "tertiary-container": "#004ecf", "surface-container-low": "#f2f3ff" }, "borderRadius": { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }, "spacing": { "space-xl": "1.5rem", "space-3xs": "0.125rem", "space-2xl": "2rem", "space-xs": "0.375rem", "space-2xs": "0.25rem", "margin-screen": "1.5rem", "space-sm": "0.5rem", "space-lg": "1.25rem", "space-base": "1rem", "gutter-default": "1rem", "space-md": "0.75rem", "gutter-compact": "0.75rem" }, "fontFamily": { "label-lg": ["Geist", "sans-serif"], "headline-md": ["Geist", "sans-serif"], "body-md": ["Geist", "sans-serif"], "body-lg": ["Geist", "sans-serif"], "headline-xl": ["Geist", "sans-serif"], "headline-lg": ["Geist", "sans-serif"], "label-sm": ["Geist", "sans-serif"], "body-sm": ["Geist", "sans-serif"], "label-md": ["Geist", "sans-serif"] }, "fontSize": { "label-lg": ["13px", { "lineHeight": "18px", "letterSpacing": "-0.005em", "fontWeight": "500" }], "headline-md": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400" }], "body-lg": ["15px", { "lineHeight": "22px", "letterSpacing": "-0.005em", "fontWeight": "400" }], "headline-xl": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "headline-lg": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "label-sm": ["10px", { "lineHeight": "12px", "letterSpacing": "0.05em", "fontWeight": "600" }], "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0em", "fontWeight": "400" }], "label-md": ["11px", { "lineHeight": "14px", "letterSpacing": "0.03em", "fontWeight": "600" }] } } } };</script><style>@layer base{html,body{width:100%;margin:0;padding:0;min-height:100vh;}body{overscroll-behavior-y:none;-webkit-tap-highlight-color:transparent;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}}::-webkit-scrollbar{display:none;}</style></head><body class="bg-surface font-body-md text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="h-14 px-space-sm flex items-center justify-between gap-space-xs"><div class="flex items-center gap-space-2xs min-w-0 flex-1"><button aria-label="Voltar" class="w-11 h-11 flex items-center justify-center rounded-lg text-on-surface hover:bg-surface-container transition-colors shrink-0" onclick="history.back()"><span class="material-symbols-outlined text-[22px]">arrow_back</span></button><img alt="logo.png" class="h-8 w-auto object-contain shrink-0 hidden sm:block" src="https://lh3.googleusercontent.com/aida/AEtjO1UzmgVq8OacfdkAybbLXI_ojJNDvaCDmSI7PTYszLRGiHwjuRl1-6BiQkNx-fR22souS_ymDejcxXLODFVwr9_mAtTq98Uz46_RSc93rpwX0rZRs1PL8dYnxEvr_xa0Fx94rv-oeVt1Px3vB9CFvmgys9lagTe364A3--TqckpNWolLjDXkn8u4VtfMdcrKT8jLLwMqIfgW9NRviL5C-ecYcmZSm2-IMublK1vIIEao5vw5aRMJtEnS080-8OVEuot7zwnvIoyQCQ"/><h1 class="font-headline-md text-headline-md text-on-surface truncate">Nova Tarefa</h1></div><div class="flex items-center gap-space-xs shrink-0"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-14 bg-surface pb-safe"><div class="flex flex-col w-full px-space-base pb-24 pt-space-xs">
+<!-- Warm Intro & Quick Stats Header -->
+<div class="flex items-start justify-between gap-space-sm mb-space-base">
+<div class="flex flex-col min-w-0">
+<div class="inline-flex items-center gap-space-2xs text-primary mb-space-3xs">
+<span class="material-symbols-outlined text-[16px]">bolt</span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider">Despacho Ágil</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Nova Tarefa</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-space-3xs">Registre uma demanda operacional direta da equipe.</p>
+</div>
+<div class="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center shrink-0 text-on-primary-fixed shadow-sm">
+<span class="material-symbols-outlined text-[20px]">assignment_add</span>
+</div>
+</div>
+<!-- Main Form Flow -->
+<form class="flex flex-col gap-space-base" id="taskForm" onsubmit="event.preventDefault(); submitTask();">
+<!-- 1. Título da Demanda -->
+<div class="flex flex-col gap-space-2xs bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<label class="font-label-lg text-label-lg text-on-surface flex items-center justify-between" for="taskTitle">
+<span>Título da Demanda <span class="text-error">*</span></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-normal">Objetivo e claro</span>
+</label>
+<div class="relative flex items-center">
+<input class="w-full bg-surface-container-low text-on-surface font-body-md text-body-md px-space-md py-space-sm rounded-lg outline-none focus:bg-surface-container transition-colors placeholder:text-outline placeholder:text-body-sm" id="taskTitle" placeholder="Ex.: Configurar computador do cliente" required="" type="text"/>
+</div>
+</div>
+<!-- 2. Descrição e Instruções -->
+<div class="flex flex-col gap-space-2xs bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<label class="font-label-lg text-label-lg text-on-surface flex items-center justify-between" for="taskDesc">
+<span>Instruções Técnicas</span>
+<span class="font-label-sm text-label-sm text-outline font-normal">Checklist ou contexto</span>
+</label>
+<textarea class="w-full bg-surface-container-low text-on-surface font-body-md text-body-md p-space-md rounded-lg outline-none focus:bg-surface-container transition-colors placeholder:text-outline placeholder:text-body-sm resize-none" id="taskDesc" placeholder="Detalhes operacionais do que precisa ser feito..." rows="3"></textarea>
+</div>
+<!-- 3. Responsável & 4. Equipe (Grid de Seleção Compacta) -->
+<div class="grid grid-cols-1 gap-space-sm">
+<!-- 3. Responsável -->
+<div class="flex flex-col gap-space-2xs bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<label class="font-label-lg text-label-lg text-on-surface">Responsável pela Execução</label>
+<div class="grid grid-cols-2 gap-space-2xs">
+<!-- Gisele -->
+<label class="cursor-pointer relative flex items-center gap-space-xs p-space-xs rounded-lg bg-surface-container-low has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed transition-colors">
+<input checked="" class="sr-only" name="assignee" type="radio" value="gisele"/>
+<img class="w-8 h-8 rounded-full object-cover shrink-0" data-alt="Close-up headshot of Gisele, a professional Brazilian technical support specialist smiling warmly wearing dark tech gear in an office environment with clean lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4eQy6oRl5wn-eD4JvF0gr0iX06HA1n8NUBS_FWzvpzqGxMc05klPxv5e7jSNCykCViKLeSplaKaInQYJ1UwwHD7GuB1JGUvc2F69Zaxegzt3AdQqM43tfTi78r_svEGqBfKZaKzFgfOZdALObyOgJbI5C7TBotA0zBX2kviKBkHeODeigSAr5nf8b__tFMOQ_-qUAHvLMvcaMxu5-k1lu1A-1Q1bI6Ka6jaZD7eGaOjEInlvC-hrg"/>
+<div class="min-w-0 flex flex-col">
+<span class="font-label-md text-label-md leading-tight truncate">Gisele</span>
+<span class="font-label-sm text-label-sm text-outline leading-tight truncate">Técnica N2</span>
+</div>
+</label>
+<!-- João -->
+<label class="cursor-pointer relative flex items-center gap-space-xs p-space-xs rounded-lg bg-surface-container-low has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed transition-colors">
+<input class="sr-only" name="assignee" type="radio" value="joao"/>
+<img class="w-8 h-8 rounded-full object-cover shrink-0" data-alt="Portrait of Joao, a young network technician with glasses and focused confident expression against a server room backdrop with subtle blue lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlQUnCnMVn2Eoa59V_2n1ca5cPmFyLwvn_dJ-Aq1XpWRw4ojiEDJCCVbce8eojkWx9WMxEo89WcehvkKh1OqVUF-fA6gq0WQcDj9lQIbjpPv2wRAne4PpHvLIB0KSXCtwR-jKrb_q6xJr1r1afYnKJeYdmQzvDxcIu1j8S-UBgBK_yrdrlGTfm8j2Zk-UkFlCahFe0-UWTZJpHG2I5RwjAl2VNovVsTiv43QwniqYojhRTMnzcP3U4"/>
+<div class="min-w-0 flex flex-col">
+<span class="font-label-md text-label-md leading-tight truncate">João</span>
+<span class="font-label-sm text-label-sm text-outline leading-tight truncate">Redes</span>
+</div>
+</label>
+<!-- Maria -->
+<label class="cursor-pointer relative flex items-center gap-space-xs p-space-xs rounded-lg bg-surface-container-low has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed transition-colors">
+<input class="sr-only" name="assignee" type="radio" value="maria"/>
+<img class="w-8 h-8 rounded-full object-cover shrink-0" data-alt="Portrait of Maria, a friendly support agent wearing a compact wireless headset in a modern customer desk workspace with bright natural light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBLagv8HJsSm2QDi_qYzxJEa18ttt8S5kTdjNGuRTs5QZ8YUAWR2sfCuKpYUB8IzURAqpXr_fJWPVdXqK7ViY52Q_UWobBzz0MQAGQBE1HzztoNMkY8Ow4FU1kYCEa343EQHmEK4nbPXcq-HjQ48wXUezeNSJO5QWueSzRmb8jsPibBTanPIkUpOkzcGDpgiwnnsyueyn30smuQl2SJWcKAW0GN2vtkogzySrRp9EqBWPs0rWIG_e2"/>
+<div class="min-w-0 flex flex-col">
+<span class="font-label-md text-label-md leading-tight truncate">Maria</span>
+<span class="font-label-sm text-label-sm text-outline leading-tight truncate">Suporte</span>
+</div>
+</label>
+<!-- Não atribuir -->
+<label class="cursor-pointer relative flex items-center gap-space-xs p-space-xs rounded-lg bg-surface-container-low has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed transition-colors">
+<input class="sr-only" name="assignee" type="radio" value="unassigned"/>
+<div class="w-8 h-8 rounded-full bg-surface-variant flex items-center justify-center shrink-0 text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]">person_off</span>
+</div>
+<div class="min-w-0 flex flex-col">
+<span class="font-label-md text-label-md leading-tight truncate">Fila Geral</span>
+<span class="font-label-sm text-label-sm text-outline leading-tight truncate">Sem atribuição</span>
+</div>
+</label>
+</div>
+</div>
+<!-- 4. Equipe -->
+<div class="flex flex-col gap-space-2xs bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<label class="font-label-lg text-label-lg text-on-surface" for="teamSelect">Equipe Responsável</label>
+<div class="relative">
+<select class="w-full bg-surface-container-low text-on-surface font-body-md text-body-md px-space-md py-space-sm pr-10 rounded-lg appearance-none outline-none focus:bg-surface-container transition-colors" id="teamSelect">
+<option selected="" value="suporte">Suporte Técnico</option>
+<option value="infra">Infraestrutura</option>
+<option value="sistemas">Sistemas &amp; PDV</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-[20px]">expand_more</span>
+</div>
+</div>
+</div>
+<!-- 5. Prioridade Operacional -->
+<div class="flex flex-col gap-space-2xs bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<label class="font-label-lg text-label-lg text-on-surface">Prioridade</label>
+<div class="grid grid-cols-4 gap-space-2xs">
+<!-- Baixa -->
+<label class="cursor-pointer flex flex-col items-center justify-center gap-space-3xs py-space-xs px-space-2xs rounded-lg bg-surface-container-low has-[:checked]:bg-surface-container-highest transition-colors text-center">
+<input class="sr-only" name="priority" type="radio" value="baixa"/>
+<span class="w-2.5 h-2.5 rounded-full bg-outline-variant"></span>
+<span class="font-label-sm text-label-sm text-on-surface truncate">Baixa</span>
+</label>
+<!-- Normal (Selected Default) -->
+<label class="cursor-pointer flex flex-col items-center justify-center gap-space-3xs py-space-xs px-space-2xs rounded-lg bg-surface-container-low has-[:checked]:bg-primary-fixed has-[:checked]:text-on-primary-fixed transition-colors text-center">
+<input checked="" class="sr-only" name="priority" type="radio" value="normal"/>
+<span class="w-2.5 h-2.5 rounded-full bg-secondary"></span>
+<span class="font-label-sm text-label-sm font-semibold truncate">Normal</span>
+</label>
+<!-- Alta -->
+<label class="cursor-pointer flex flex-col items-center justify-center gap-space-3xs py-space-xs px-space-2xs rounded-lg bg-surface-container-low has-[:checked]:bg-secondary-fixed has-[:checked]:text-on-secondary-fixed transition-colors text-center">
+<input class="sr-only" name="priority" type="radio" value="alta"/>
+<span class="w-2.5 h-2.5 rounded-full bg-secondary-container"></span>
+<span class="font-label-sm text-label-sm font-semibold truncate">Alta</span>
+</label>
+<!-- Urgente -->
+<label class="cursor-pointer flex flex-col items-center justify-center gap-space-3xs py-space-xs px-space-2xs rounded-lg bg-surface-container-low has-[:checked]:bg-error-container has-[:checked]:text-on-error-container transition-colors text-center">
+<input class="sr-only" name="priority" type="radio" value="urgente"/>
+<span class="w-2.5 h-2.5 rounded-full bg-error"></span>
+<span class="font-label-sm text-label-sm font-semibold truncate">Urgente</span>
+</label>
+</div>
+</div>
+<!-- 6. Origem da Demanda -->
+<div class="flex flex-col gap-space-2xs bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<label class="font-label-lg text-label-lg text-on-surface">Origem do Pedido</label>
+<div class="flex flex-wrap gap-space-xs">
+<label class="cursor-pointer">
+<input checked="" class="sr-only" name="origin" type="radio" value="gestor"/>
+<div class="px-space-md py-space-xs rounded-full bg-surface-container-low text-on-surface-variant font-label-md text-label-md flex items-center gap-space-3xs has-[:checked]:bg-primary has-[:checked]:text-on-primary transition-all">
+<span class="material-symbols-outlined text-[14px]">shield_person</span>
+            Gestor
+          </div>
+</label>
+<label class="cursor-pointer">
+<input class="sr-only" name="origin" type="radio" value="rotina"/>
+<div class="px-space-md py-space-xs rounded-full bg-surface-container-low text-on-surface-variant font-label-md text-label-md flex items-center gap-space-3xs has-[:checked]:bg-primary has-[:checked]:text-on-primary transition-all">
+<span class="material-symbols-outlined text-[14px]">sync</span>
+            Rotina interna
+          </div>
+</label>
+<label class="cursor-pointer">
+<input class="sr-only" name="origin" type="radio" value="cliente"/>
+<div class="px-space-md py-space-xs rounded-full bg-surface-container-low text-on-surface-variant font-label-md text-label-md flex items-center gap-space-3xs has-[:checked]:bg-primary has-[:checked]:text-on-primary transition-all">
+<span class="material-symbols-outlined text-[14px]">storefront</span>
+            Cliente
+          </div>
+</label>
+<label class="cursor-pointer">
+<input class="sr-only" name="origin" type="radio" value="comercial"/>
+<div class="px-space-md py-space-xs rounded-full bg-surface-container-low text-on-surface-variant font-label-md text-label-md flex items-center gap-space-3xs has-[:checked]:bg-primary has-[:checked]:text-on-primary transition-all">
+<span class="material-symbols-outlined text-[14px]">handshake</span>
+            Comercial
+          </div>
+</label>
+</div>
+</div>
+<!-- 7. Cliente (Opcional) -->
+<div class="flex flex-col gap-space-2xs bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<div class="flex items-center justify-between">
+<label class="font-label-lg text-label-lg text-on-surface" for="clientSelect">Cliente Vinculado</label>
+<span class="font-label-sm text-label-sm text-outline">Opcional</span>
+</div>
+<div class="relative">
+<select class="w-full bg-surface-container-low text-on-surface font-body-md text-body-md px-space-md py-space-sm pr-10 rounded-lg appearance-none outline-none focus:bg-surface-container transition-colors" id="clientSelect">
+<option value="mercado_x">Mercado X (Matriz Centro)</option>
+<option value="restaurante_uniao">Restaurante União (Av. Principal)</option>
+<option value="loja_central">Loja Central Distribuição</option>
+<option selected="" value="operacao_interna">Operação Interna / Sede</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-[20px]">store</span>
+</div>
+</div>
+<!-- 8. Prazo de Entrega com Atalhos Rápidos -->
+<div class="flex flex-col gap-space-2xs bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<div class="flex items-center justify-between">
+<label class="font-label-lg text-label-lg text-on-surface" for="dueDateInput">Prazo de Conclusão</label>
+<span class="font-label-sm text-label-sm text-secondary flex items-center gap-space-3xs font-semibold" id="deadlineStatus">
+<span class="material-symbols-outlined text-[14px]">schedule</span> Hoje às 17:00
+        </span>
+</div>
+<!-- Input de Horário -->
+<div class="relative flex items-center mb-space-2xs">
+<input class="w-full bg-surface-container-low text-on-surface font-body-md text-body-md px-space-md py-space-sm rounded-lg outline-none focus:bg-surface-container transition-colors" id="dueDateInput" type="text" value="Hoje, 17:00"/>
+<span class="material-symbols-outlined absolute right-3 text-on-surface-variant pointer-events-none text-[20px]">calendar_clock</span>
+</div>
+<!-- Atalhos de 1 Toque -->
+<div class="grid grid-cols-3 gap-space-xs">
+<button class="py-space-xs px-space-2xs rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface-variant font-label-sm text-label-sm text-center active:scale-95 transition-transform" onclick="setDeadline('+2 Horas', 'Hoje às 15:30')" type="button">
+          +2 horas
+        </button>
+<button class="py-space-xs px-space-2xs rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface-variant font-label-sm text-label-sm text-center active:scale-95 transition-transform" onclick="setDeadline('Fim do dia (18:00)', 'Hoje às 18:00')" type="button">
+          Fim do dia
+        </button>
+<button class="py-space-xs px-space-2xs rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface-variant font-label-sm text-label-sm text-center active:scale-95 transition-transform" onclick="setDeadline('Amanhã, 12:00', 'Amanhã às 12:00')" type="button">
+          Amanhã
+        </button>
+</div>
+</div>
+</form>
+<!-- Sticky Bottom Actions Bar (Tactile & Clean) -->
+<div class="fixed bottom-0 left-0 right-0 p-space-base bg-surface/95 backdrop-blur-md shadow-[0_-4px_12px_rgba(0,0,0,0.05)] z-40 flex flex-col gap-space-2xs max-w-lg mx-auto">
+<button class="w-full h-11 bg-primary hover:bg-primary-container active:scale-[0.99] text-on-primary font-label-lg text-label-lg rounded-xl flex items-center justify-center gap-space-xs shadow-md transition-all" onclick="submitTask()" type="button">
+<span class="material-symbols-outlined text-[20px]">check_circle</span>
+<span>Criar e Atribuir Tarefa</span>
+</button>
+<button class="w-full h-9 bg-transparent hover:bg-surface-container text-on-surface-variant font-label-md text-label-md rounded-lg flex items-center justify-center transition-colors" onclick="history.back()" type="button">
+      Cancelar
+    </button>
+</div>
+<!-- Toast de Sucesso e Feedback Operacional -->
+<div class="fixed top-16 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 pointer-events-none opacity-0 translate-y-[-10px] w-[90%] max-w-sm" id="toastNotification">
+<div class="bg-inverse-surface text-inverse-on-surface p-space-sm rounded-xl shadow-xl flex items-center gap-space-xs">
+<div class="w-7 h-7 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md font-semibold">Demanda Encaminhada!</span>
+<span class="font-body-sm text-body-sm text-surface-variant truncate">Notificação despachada ao técnico.</span>
+</div>
+</div>
+</div>
+</div>
+<script>
+  function setDeadline(shortcutText, previewText) {
+    const input = document.getElementById('dueDateInput');
+    const status = document.getElementById('deadlineStatus');
+    if (input && status) {
+      input.value = shortcutText;
+      status.innerHTML = `<span class="material-symbols-outlined text-[14px]">schedule</span> ${previewText}`;
+    }
+  }
+
+  function submitTask() {
+    const titleInput = document.getElementById('taskTitle');
+    if (titleInput && !titleInput.value.trim()) {
+      titleInput.focus();
+      titleInput.parentElement.classList.add('bg-error-container');
+      setTimeout(() => {
+        titleInput.parentElement.classList.remove('bg-error-container');
+      }, 1500);
+      return;
+    }
+
+    const toast = document.getElementById('toastNotification');
+    if (toast) {
+      toast.classList.remove('opacity-0', 'translate-y-[-10px]');
+      toast.classList.add('opacity-100', 'translate-y-0');
+      
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-[-10px]');
+        toast.classList.remove('opacity-100', 'translate-y-0');
+        if (window.history.length > 1) {
+          window.history.back();
+        }
+      }, 1400);
+    }
+  }
+</script></main></body></html>

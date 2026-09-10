@@ -1,17 +1,23 @@
 import { useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import {
+  ArrowLeft, CalendarClock, CheckCircle2, ChevronDown, Clock, History, Paperclip, Play, RotateCcw, Send, TriangleAlert,
+} from "lucide-react";
 import type { TaskOrigin, TaskStatus } from "@hubagendor/shared";
-import { ORIGIN_LABEL, taskOrigins } from "@hubagendor/shared";
+import { ORIGIN_LABEL, PRIORITY_LABEL, taskOrigins, taskPriorities } from "@hubagendor/shared";
 import { trpc } from "../lib/trpc.js";
 import { dueLabel, formatDateTime, isDueToday, userName } from "../lib/format.js";
-import { AttentionSection, CommentTimeline, EMPTY_FILTERS, TaskFilters, TaskList, type TaskFilterValue, type TaskListItem } from "../components/tasks.js";
-import { EmptyState, ErrorState, LoadingState, PageHeader, PriorityBadge, TaskStatusBadge } from "../components/ui.js";
+import { AttachmentIcon, CommentTimeline, EMPTY_FILTERS, TaskFilters, TaskList, type TaskFilterValue, type TaskListItem } from "../components/tasks.js";
+import { AssigneeAvatar, EmptyState, ErrorState, LoadingState, PageHeader, PriorityBadge, TaskStatusBadge } from "../components/ui.js";
 import { useToast } from "../components/Toast.js";
 
 const VALID_STATUS = ["todo", "in_progress", "completed"] as const;
 
+/* ---------------------------------------------------------------- Listas */
+
 export function TasksPage({ scope }: { scope: "all" | "mine" }) {
   const [params] = useSearchParams();
+  const me = trpc.auth.me.useQuery();
   const [filters, setFilters] = useState<TaskFilterValue>({
     ...EMPTY_FILTERS,
     overdueOnly: params.get("overdueOnly") === "1",
@@ -20,18 +26,28 @@ export function TasksPage({ scope }: { scope: "all" | "mine" }) {
       : "",
   });
   const due = params.get("due");
+  const assignee = params.get("assignee") ?? undefined;
   const list = trpc.tasks.list.useQuery({
     scope,
     search: filters.search,
     overdueOnly: filters.overdueOnly,
     status: filters.status || undefined,
+    assigneeId: assignee,
     due: due === "today" || due === "none" ? due : undefined,
     pageSize: scope === "mine" ? 100 : 20,
   });
 
+  const firstName = me.data?.user?.name?.split(" ")[0] ?? "";
   return (
     <div>
-      <PageHeader title={scope === "mine" ? "Minhas tarefas" : "Tarefas"} subtitle="Toque para abrir, iniciar e concluir" />
+      {scope === "mine" ? (
+        <div className="mb-4">
+          <h1 className="text-xl font-semibold tracking-tight text-slate-900">Minhas tarefas</h1>
+          <p className="mt-0.5 text-sm text-slate-500">O que você precisa fazer agora{firstName ? `, ${firstName}` : ""}.</p>
+        </div>
+      ) : (
+        <PageHeader title="Tarefas" subtitle="Toque para abrir, iniciar e concluir" />
+      )}
       <TaskFilters value={filters} onChange={setFilters} />
       {list.isPending ? <LoadingState /> :
         list.isError ? <ErrorState message="Não foi possível carregar. Verifique sua conexão e tente novamente." onRetry={() => list.refetch()} /> :
@@ -51,82 +67,220 @@ function MyTasksGroups({ items }: { items: TaskListItem[] }) {
   const done = items.filter((t) => t.status === "completed").slice(0, 5);
 
   if (!overdue.length && !today.length && !inProgress.length && !upcoming.length && !done.length) {
-    return <EmptyState title="Você não tem tarefas pendentes" hint="Quando Carlos atribuir algo, aparece aqui." />;
+    return <EmptyState title="Você não tem tarefas pendentes" hint="Quando atribuírem algo a você, aparece aqui." />;
   }
   return (
     <div>
-      {overdue.length > 0 && <AttentionSection title="Atrasadas"><TaskList tasks={overdue} /></AttentionSection>}
-      {today.length > 0 && <AttentionSection title="Hoje"><TaskList tasks={today} /></AttentionSection>}
-      {inProgress.length > 0 && <AttentionSection title="Em andamento"><TaskList tasks={inProgress} /></AttentionSection>}
-      {upcoming.length > 0 && <AttentionSection title="Próximas"><TaskList tasks={upcoming} /></AttentionSection>}
-      {done.length > 0 && <AttentionSection title="Concluídas"><TaskList tasks={done} /></AttentionSection>}
+      {overdue.length > 0 && <Group title="Atrasadas" count={overdue.length}><TaskList tasks={overdue} /></Group>}
+      {today.length > 0 && <Group title="Hoje" count={today.length}><TaskList tasks={today} /></Group>}
+      {inProgress.length > 0 && <Group title="Em andamento" count={inProgress.length}><TaskList tasks={inProgress} /></Group>}
+      {upcoming.length > 0 && <Group title="Próximas" count={upcoming.length}><TaskList tasks={upcoming} /></Group>}
+      {done.length > 0 && <Group title="Concluídas" count={done.length}><TaskList tasks={done} /></Group>}
     </div>
   );
+}
+
+function Group({ title, count, children }: { title: string; count: number; children: React.ReactNode }) {
+  return (
+    <section className="mt-5">
+      <div className="mb-2 flex items-center justify-between">
+        <h2 className="flex items-center gap-2 text-[15px] font-semibold text-slate-900">
+          <span className="h-2 w-2 rounded-full bg-accent-600" aria-hidden />
+          {title}
+        </h2>
+        <span className="text-xs text-slate-500 tnum">{count}</span>
+      </div>
+      {children}
+    </section>
+  );
+}
+
+/* ---------------------------------------------------------------- Criar */
+
+function toLocalInput(d: Date): string {
+  const p = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
 }
 
 export function NewTaskPage() {
   const nav = useNavigate();
   const utils = trpc.useUtils();
   const notify = useToast();
-  const [created, setCreated] = useState<{ id: string; title: string; assigneeId: string } | null>(null);
+  const members = trpc.organization.getMembers.useQuery();
+  const teams = trpc.teams.list.useQuery();
+  const clients = trpc.clients.list.useQuery();
+
+  const [created, setCreated] = useState<{ id: string; assigneeId: string } | null>(null);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [assigneeId, setAssigneeId] = useState("");
+  const [priority, setPriority] = useState<(typeof taskPriorities)[number]>("normal");
+  const [origin, setOrigin] = useState<"" | TaskOrigin>("");
+  const [teamId, setTeamId] = useState("");
+  const [clientId, setClientId] = useState("");
+  const [dueAt, setDueAt] = useState("");
+  const [showMore, setShowMore] = useState(false);
+
   const create = trpc.tasks.create.useMutation({
     onSuccess: (task) => {
       utils.tasks.list.invalidate();
       utils.tasks.getSummary.invalidate();
       notify(`Tarefa criada para ${userName(task.assigneeId)}.`);
-      setCreated({ id: task.id, title: task.title, assigneeId: task.assigneeId });
+      setCreated({ id: task.id, assigneeId: task.assigneeId });
     },
-    onError: () => notify("Não foi possível salvar. Verifique sua conexão.", "error"),
+    onError: () => notify("Não foi possível salvar. O rascunho continua aqui.", "error"),
   });
-  const [title, setTitle] = useState("");
-  const [assigneeId, setAssigneeId] = useState("gisele");
-  const [origin, setOrigin] = useState<"" | TaskOrigin>("");
 
-  // Pós-criação sem beco sem saída (UX §2.7, §5.2 item 8).
+  const activeMembers = (members.data ?? []).filter((m) => m.active);
+
+  function submit() {
+    if (!title.trim()) { notify("Informe o título da tarefa.", "error"); return; }
+    if (!assigneeId) { notify("Selecione um responsável.", "error"); return; }
+    create.mutate({
+      title,
+      description: description || undefined,
+      assigneeId,
+      priority,
+      origin: origin || undefined,
+      teamId: teamId || undefined,
+      clientId: clientId || undefined,
+      dueAt: dueAt ? new Date(dueAt) : undefined,
+    });
+  }
+
   if (created) {
     return (
-      <div className="space-y-3 text-center">
-        <p role="status" className="rounded-2xl bg-accent-50 p-6 font-semibold text-accent-800">
-          Tarefa criada para {userName(created.assigneeId)}.
-        </p>
-        <Link to={`/app/tasks/${created.id}`} className="touch-target block rounded-xl bg-accent-700 py-3 font-semibold text-white">Abrir tarefa</Link>
-        <button onClick={() => { setCreated(null); setTitle(""); setOrigin(""); }} className="touch-target block w-full rounded-xl border py-3 font-semibold">Criar outra</button>
-        <button onClick={() => nav("/app")} className="touch-target w-full py-3 font-semibold text-neutral-500">Voltar ao painel</button>
+      <div className="mx-auto max-w-lg space-y-3 py-6 text-center">
+        <div className="mx-auto grid h-12 w-12 place-items-center rounded-full bg-success-100 text-success-700">
+          <CheckCircle2 size={26} />
+        </div>
+        <p role="status" className="font-semibold text-slate-900">Tarefa criada para {userName(created.assigneeId)}.</p>
+        <Link to={`/app/tasks/${created.id}`} className="block rounded-xl bg-accent-700 py-3 font-semibold text-white">Abrir tarefa</Link>
+        <button onClick={() => { setCreated(null); setTitle(""); setDescription(""); setDueAt(""); }} className="block w-full rounded-xl border border-line bg-white py-3 font-semibold">Criar outra</button>
+        <button onClick={() => nav("/app")} className="w-full py-3 font-semibold text-slate-500">Voltar ao painel</button>
       </div>
     );
   }
 
+  const card = "rounded-xl border border-line bg-white p-4 shadow-sm";
+  const label = "mb-1.5 block text-sm font-medium text-slate-800";
+  const field = "h-10 w-full rounded-lg border border-line bg-slate-50 px-3 text-sm outline-none focus:border-accent-600 focus:bg-white";
+
   return (
-    <form
-      className="space-y-3"
-      onSubmit={(e) => { e.preventDefault(); create.mutate({ title, assigneeId, origin: origin || undefined }); }}
-    >
-      <PageHeader title="Nova tarefa" subtitle="Menos de 1 minuto: título + responsável" />
-      <label className="block text-sm">Título*
-        <input value={title} onChange={(e) => setTitle(e.target.value)} required maxLength={200}
-          placeholder="Ex.: Mandar cobrança para o Cliente X"
-          className="touch-target mt-1 w-full rounded-xl border px-3" />
-      </label>
-      <label className="block text-sm">Responsável*
-        <select value={assigneeId} onChange={(e) => setAssigneeId(e.target.value)} className="touch-target mt-1 w-full rounded-xl border bg-white px-3">
-          <option value="gisele">Gisele</option>
-          <option value="wellington">Wellington</option>
-          <option value="carlos">Carlos</option>
-        </select>
-      </label>
-      <label className="block text-sm">Origem (opcional)
-        <select value={origin} onChange={(e) => setOrigin(e.target.value as "" | TaskOrigin)} className="touch-target mt-1 w-full rounded-xl border bg-white px-3">
-          <option value="">Não informada</option>
-          {taskOrigins.map((o) => <option key={o} value={o}>{ORIGIN_LABEL[o]}</option>)}
-        </select>
-      </label>
-      {create.isError && <p role="alert" className="text-sm text-danger-700">Não salvou. O rascunho continua aqui — tente de novo.</p>}
-      <button disabled={create.isPending} className="touch-target w-full rounded-xl bg-accent-700 py-3 font-semibold text-white disabled:opacity-50">
-        {create.isPending ? "Salvando…" : "Criar tarefa"}
+    <form className="mx-auto max-w-lg space-y-3 pb-28" onSubmit={(e) => { e.preventDefault(); submit(); }}>
+      <PageHeader title="Nova tarefa" subtitle="Registre uma demanda operacional em menos de 1 minuto." />
+
+      <div className={card}>
+        <label className={label} htmlFor="nt-title">Título da demanda *</label>
+        <input id="nt-title" className={field} value={title} onChange={(e) => setTitle(e.target.value)} maxLength={200} placeholder="Ex.: Mandar cobrança para o Cliente X" />
+      </div>
+
+      <div className={card}>
+        <label className={label}>Responsável *</label>
+        <div className="grid grid-cols-2 gap-2">
+          {activeMembers.map((m) => (
+            <button
+              type="button"
+              key={m.id}
+              onClick={() => setAssigneeId(m.id)}
+              className={`flex items-center gap-2 rounded-lg border p-2 text-left transition ${assigneeId === m.id ? "border-accent-600 bg-accent-50" : "border-line bg-slate-50 hover:bg-slate-100"}`}
+            >
+              <AssigneeAvatar name={m.name} size={28} />
+              <span className="min-w-0">
+                <span className="block truncate text-[13px] font-medium text-slate-800">{m.name}</span>
+                <span className="block truncate text-[11px] text-slate-500">{m.role}</span>
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className={card}>
+        <label className={label}>Prioridade</label>
+        <div className="grid grid-cols-4 gap-1.5">
+          {taskPriorities.map((p) => (
+            <button
+              type="button"
+              key={p}
+              onClick={() => setPriority(p)}
+              className={`rounded-lg border py-2 text-xs font-semibold transition ${priority === p ? "border-accent-600 bg-accent-50 text-accent-700" : "border-line bg-slate-50 text-slate-600 hover:bg-slate-100"}`}
+            >
+              {PRIORITY_LABEL[p]}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className={card}>
+        <label className={label}>Prazo</label>
+        <input type="datetime-local" className={field} value={dueAt} onChange={(e) => setDueAt(e.target.value)} />
+        <div className="mt-2 grid grid-cols-3 gap-1.5">
+          <QuickDue label="+2 horas" onClick={() => setDueAt(toLocalInput(new Date(Date.now() + 2 * 3600 * 1000)))} />
+          <QuickDue label="Fim do dia" onClick={() => { const d = new Date(); d.setHours(18, 0, 0, 0); setDueAt(toLocalInput(d)); }} />
+          <QuickDue label="Amanhã" onClick={() => { const d = new Date(Date.now() + 86400000); d.setHours(12, 0, 0, 0); setDueAt(toLocalInput(d)); }} />
+        </div>
+      </div>
+
+      <button type="button" onClick={() => setShowMore((v) => !v)} className="flex w-full items-center justify-between rounded-xl border border-line bg-white px-4 py-3 text-sm font-medium text-slate-700">
+        Mais detalhes
+        <ChevronDown size={18} className={`transition ${showMore ? "rotate-180" : ""}`} />
       </button>
+
+      {showMore && (
+        <div className="space-y-3">
+          <div className={card}>
+            <label className={label} htmlFor="nt-desc">Instruções / descrição</label>
+            <textarea id="nt-desc" rows={3} className="w-full rounded-lg border border-line bg-slate-50 p-3 text-sm outline-none focus:border-accent-600 focus:bg-white" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Detalhes operacionais do que precisa ser feito…" />
+          </div>
+          <div className={card}>
+            <label className={label}>Origem do pedido</label>
+            <div className="flex flex-wrap gap-1.5">
+              {taskOrigins.map((o) => (
+                <button type="button" key={o} onClick={() => setOrigin(origin === o ? "" : o)}
+                  className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${origin === o ? "border-accent-600 bg-accent-700 text-white" : "border-line bg-slate-50 text-slate-600"}`}>
+                  {ORIGIN_LABEL[o]}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className={`${card} grid grid-cols-1 gap-3`}>
+            <div>
+              <label className={label} htmlFor="nt-team">Equipe</label>
+              <select id="nt-team" className={field} value={teamId} onChange={(e) => setTeamId(e.target.value)}>
+                <option value="">Sem equipe</option>
+                {(teams.data ?? []).map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className={label} htmlFor="nt-client">Cliente</label>
+              <select id="nt-client" className={field} value={clientId} onChange={(e) => setClientId(e.target.value)}>
+                <option value="">Sem cliente</option>
+                {(clients.data ?? []).map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+              </select>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="fixed inset-x-0 bottom-0 z-30 mx-auto max-w-lg border-t border-line bg-white/95 p-4 pb-safe backdrop-blur md:static md:border-0 md:bg-transparent md:p-0">
+        <button type="submit" disabled={create.isPending} className="w-full rounded-xl bg-accent-700 py-3 font-semibold text-white shadow-sm disabled:opacity-50">
+          {create.isPending ? "Salvando…" : "Criar tarefa"}
+        </button>
+        <button type="button" onClick={() => nav(-1)} className="mt-1 w-full py-2 text-sm font-medium text-slate-500">Cancelar</button>
+      </div>
     </form>
   );
 }
+
+function QuickDue({ label, onClick }: { label: string; onClick: () => void }) {
+  return (
+    <button type="button" onClick={onClick} className="rounded-lg border border-line bg-slate-50 py-1.5 text-xs text-slate-600 hover:bg-slate-100">
+      {label}
+    </button>
+  );
+}
+
+/* ---------------------------------------------------------------- Detalhe */
 
 export function TaskDetailPage() {
   const { id } = useParams();
@@ -135,11 +289,9 @@ export function TaskDetailPage() {
   const events = trpc.tasks.getEvents.useQuery({ id: id ?? "" }, { enabled: !!id });
   const utils = trpc.useUtils();
   const refresh = () => { utils.tasks.getById.invalidate(); utils.tasks.list.invalidate(); utils.tasks.getSummary.invalidate(); };
+
   const setStatus = trpc.tasks.setStatus.useMutation({
-    onSuccess: (_d, v) => {
-      refresh();
-      notify(v.status === "completed" ? "Tarefa concluída." : "Tarefa iniciada.");
-    },
+    onSuccess: (_d, v) => { refresh(); notify(v.status === "completed" ? "Tarefa concluída." : "Tarefa atualizada."); },
     onError: () => notify("Você não tem permissão para alterar esta tarefa.", "error"),
   });
   const remind = trpc.tasks.sendReminder.useMutation({
@@ -150,49 +302,124 @@ export function TaskDetailPage() {
     onSuccess: () => { utils.tasks.getById.invalidate(); notify("Observação adicionada."); },
     onError: () => notify("Não foi possível salvar a observação.", "error"),
   });
+  const reopen = trpc.tasks.reopen.useMutation({
+    onSuccess: () => { refresh(); notify("Tarefa reaberta."); setReopenOpen(false); setReason(""); },
+    onError: () => notify("Informe o motivo da reabertura.", "error"),
+  });
+
   const [comment, setComment] = useState("");
+  const [reopenOpen, setReopenOpen] = useState(false);
+  const [reason, setReason] = useState("");
 
   if (detail.isPending) return <LoadingState />;
   if (detail.isError || !detail.data) return <ErrorState message="Tarefa não encontrada." />;
   const t = detail.data;
 
   return (
-    <div className="space-y-4">
-      <PageHeader title={t.title} subtitle={`${userName(t.assigneeId)}${t.clientName ? ` • ${t.clientName}` : ""} • ${t.dueAt ? dueLabel(t.dueAt, t.overdue) : "Sem prazo"}`} />
-      <div className="flex flex-wrap gap-2">
+    <div className="mx-auto max-w-2xl space-y-4 pb-8">
+      <div className="flex flex-wrap items-center gap-1.5">
         <TaskStatusBadge status={t.status} />
         <PriorityBadge priority={t.priority} />
-        {t.origin && <span className="rounded-full bg-neutral-100 px-2 py-1 text-xs">Origem: {ORIGIN_LABEL[t.origin]}</span>}
+        {t.clientName && <span className="rounded border border-line bg-slate-50 px-2 py-0.5 text-[11px] text-slate-600">{t.clientName}</span>}
+        {t.origin && <span className="rounded border border-line bg-slate-50 px-2 py-0.5 text-[11px] text-slate-600">Origem: {ORIGIN_LABEL[t.origin]}</span>}
       </div>
 
-      {/* Ação primária por status (UX §9.2) */}
+      <div>
+        <Link to="/app/tasks" className="mb-1 inline-flex items-center gap-1 text-sm text-accent-700">
+          <ArrowLeft size={15} /> Tarefas
+        </Link>
+        <h1 className="text-xl font-semibold leading-tight tracking-tight text-slate-900">{t.title}</h1>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        <div className="flex items-center gap-2 rounded-xl border border-line bg-white p-3 shadow-sm">
+          <AssigneeAvatar name={userName(t.assigneeId)} size={36} />
+          <div className="min-w-0">
+            <span className="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">Responsável</span>
+            <p className="truncate text-sm font-medium text-slate-800">{userName(t.assigneeId)}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 rounded-xl border border-line bg-white p-3 shadow-sm">
+          <span className="grid h-9 w-9 place-items-center rounded-lg bg-slate-100 text-accent-700"><Clock size={18} /></span>
+          <div className="min-w-0">
+            <span className="block text-[10px] font-semibold uppercase tracking-wider text-slate-400">Prazo</span>
+            <p className={`truncate text-sm font-medium ${t.overdue ? "text-danger-700" : "text-slate-800"}`}>{dueLabel(t.dueAt, t.overdue)}</p>
+          </div>
+        </div>
+      </div>
+
       <div className="flex flex-wrap gap-2">
         {t.status === "todo" && (
-          <button onClick={() => setStatus.mutate({ id: t.id, status: "in_progress" })} disabled={setStatus.isPending} className="touch-target flex-1 rounded-xl bg-info-600 px-4 font-semibold text-white disabled:opacity-50">Iniciar tarefa</button>
+          <button onClick={() => setStatus.mutate({ id: t.id, status: "in_progress" })} disabled={setStatus.isPending} className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-info-600 py-3 font-semibold text-white disabled:opacity-50">
+            <Play size={18} /> Iniciar tarefa
+          </button>
         )}
         {t.status === "in_progress" && (
-          <button onClick={() => setStatus.mutate({ id: t.id, status: "completed" })} disabled={setStatus.isPending} className="touch-target flex-1 rounded-xl bg-accent-700 px-4 font-semibold text-white disabled:opacity-50">Marcar como concluída</button>
+          <button onClick={() => setStatus.mutate({ id: t.id, status: "completed" })} disabled={setStatus.isPending} className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-accent-700 py-3 font-semibold text-white disabled:opacity-50">
+            <CheckCircle2 size={18} /> Marcar como concluída
+          </button>
         )}
         {(t.status === "todo" || t.status === "in_progress") && (
-          <button onClick={() => remind.mutate({ id: t.id })} disabled={remind.isPending} className="touch-target rounded-xl border px-4 font-semibold">Cobrar atualização</button>
+          <button onClick={() => remind.mutate({ id: t.id })} disabled={remind.isPending} className="flex items-center justify-center gap-1.5 rounded-xl border border-line bg-white px-4 py-3 font-semibold text-slate-700">
+            <TriangleAlert size={16} /> Cobrar
+          </button>
+        )}
+        {t.status === "completed" && (
+          <button onClick={() => setReopenOpen(true)} className="flex items-center justify-center gap-1.5 rounded-xl border border-line bg-white px-4 py-3 font-semibold text-slate-700">
+            <RotateCcw size={16} /> Reabrir tarefa
+          </button>
         )}
       </div>
 
-      <section>
-        <h2 className="mb-2 font-semibold">Comentários</h2>
+      {reopenOpen && (
+        <div className="rounded-xl border border-line bg-white p-3 shadow-sm">
+          <label className="mb-1 block text-sm font-medium text-slate-800" htmlFor="reopen-reason">Motivo da reabertura *</label>
+          <input id="reopen-reason" className="h-10 w-full rounded-lg border border-line bg-slate-50 px-3 text-sm" value={reason} onChange={(e) => setReason(e.target.value)} placeholder="Ex.: Cliente solicitou nova ação." />
+          <div className="mt-2 flex gap-2">
+            <button onClick={() => reopen.mutate({ id: t.id, reason })} disabled={reopen.isPending || !reason.trim()} className="rounded-lg bg-accent-700 px-4 py-2 text-sm font-semibold text-white disabled:opacity-50">Confirmar reabertura</button>
+            <button onClick={() => setReopenOpen(false)} className="rounded-lg border border-line px-4 py-2 text-sm font-medium">Cancelar</button>
+          </div>
+        </div>
+      )}
+
+      {t.description && (
+        <section className="rounded-xl border border-line bg-white p-4 shadow-sm">
+          <h2 className="mb-2 flex items-center gap-1.5 text-[15px] font-semibold text-slate-900"><Paperclip size={16} className="text-accent-600" /> Descrição</h2>
+          <p className="whitespace-pre-wrap rounded-lg bg-slate-50 p-3 text-sm leading-relaxed text-slate-700">{t.description}</p>
+        </section>
+      )}
+
+      <section className="space-y-2">
+        <h2 className="flex items-center gap-1.5 text-[15px] font-semibold text-slate-900"><History size={16} className="text-cyan-600" /> Timeline operacional</h2>
         <CommentTimeline comments={t.comments} />
-        <form className="mt-2 flex gap-2" onSubmit={(e) => { e.preventDefault(); if (comment.trim()) { addComment.mutate({ id: t.id, body: comment }); setComment(""); } }}>
-          <input value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Ex.: Cliente pediu retorno às 14h"
-            className="touch-target min-w-0 flex-1 rounded-xl border px-3" aria-label="Adicionar observação" />
-          <button className="touch-target rounded-xl border px-4 font-semibold">Enviar</button>
+        <form className="rounded-xl border border-line bg-white p-2.5 shadow-sm" onSubmit={(e) => { e.preventDefault(); if (comment.trim()) { addComment.mutate({ id: t.id, body: comment }); setComment(""); } }}>
+          <textarea rows={2} className="w-full resize-none rounded-lg bg-slate-50 p-2 text-sm outline-none" value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Adicionar uma atualização operacional…" aria-label="Adicionar observação" />
+          <div className="mt-1.5 flex items-center justify-between">
+            <span className="flex items-center gap-1 text-xs text-slate-400"><AttachmentIcon /> anexe abaixo</span>
+            <button className="flex items-center gap-1.5 rounded-lg bg-cyan-600 px-3 py-1.5 text-sm font-semibold text-white">
+              <Send size={15} /> Enviar
+            </button>
+          </div>
         </form>
       </section>
+
       <AttachmentSection taskId={t.id} attachments={t.attachments} />
-      <section>
-        <h2 className="mb-2 font-semibold">Histórico</h2>
-        {events.data?.map((ev) => (
-          <p key={ev.id} className="text-xs text-neutral-500">{formatDateTime(ev.createdAt)} — {userName(ev.actorId)} — {ev.eventType}</p>
-        ))}
+
+      <section className="rounded-xl border border-line bg-white p-4 shadow-sm">
+        <details>
+          <summary className="flex cursor-pointer list-none items-center justify-between">
+            <span className="flex items-center gap-1.5 text-[15px] font-semibold text-slate-900"><History size={16} className="text-slate-400" /> Histórico de auditoria</span>
+            <ChevronDown size={18} className="text-slate-400" />
+          </summary>
+          <ul className="mt-3 space-y-2">
+            {events.data?.map((ev) => (
+              <li key={ev.id} className="flex items-start gap-2 text-sm text-slate-600">
+                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400" />
+                <span><strong className="font-semibold text-slate-800">{userName(ev.actorId)}</strong> — {ev.eventType} · <span className="text-slate-400 tnum">{formatDateTime(ev.createdAt)}</span></span>
+              </li>
+            ))}
+          </ul>
+        </details>
       </section>
     </div>
   );
@@ -204,8 +431,7 @@ function formatBytes(n: number): string {
   return `${(n / 1048576).toFixed(1)} MB`;
 }
 
-/** Anexos de evidência — nome/tipo/tamanho antes do envio (UX.md §6.3).
- *  Upload binário via fetch /uploads (multipart não cabe no tRPC). */
+/** Anexos de evidência — nome/tipo/tamanho antes do envio (UX.md §6.3). */
 function AttachmentSection({ taskId, attachments }: {
   taskId: string;
   attachments: { id: string; fileUrl: string; fileName: string; mimeType: string; fileSize: number }[];
@@ -225,8 +451,7 @@ function AttachmentSection({ taskId, attachments }: {
     try {
       const fd = new FormData();
       fd.append("file", file);
-      // TODO(login): sessão real; hoje o servidor usa x-user-id dev.
-      const res = await fetch("/uploads", { method: "POST", headers: { "x-user-id": "web" }, body: fd });
+      const res = await fetch("/uploads", { method: "POST", headers: { "x-user-id": localStorage.getItem("hub.userId") ?? "carlos" }, body: fd });
       if (!res.ok) throw new Error(await res.text());
       const meta = await res.json();
       attach.mutate({ taskId, fileUrl: meta.fileUrl, fileName: meta.fileName, mimeType: meta.mimeType, fileSize: meta.fileSize });
@@ -238,29 +463,27 @@ function AttachmentSection({ taskId, attachments }: {
   }
 
   return (
-    <section>
-      <h2 className="mb-2 font-semibold">Anexos</h2>
+    <section className="rounded-xl border border-line bg-white p-4 shadow-sm">
+      <h2 className="mb-2 flex items-center gap-1.5 text-[15px] font-semibold text-slate-900"><Paperclip size={16} className="text-accent-600" /> Evidências e anexos ({attachments.length})</h2>
       {attachments.length > 0 ? (
         <ul className="space-y-2">
           {attachments.map((a) => (
-            <li key={a.id}>
-              <a href={a.fileUrl} target="_blank" rel="noreferrer" className="block rounded-xl border bg-white p-3 text-sm">
-                <span className="font-semibold">{a.fileName}</span>
-                <span className="block text-xs text-neutral-500">{a.mimeType} • {formatBytes(a.fileSize)}</span>
-              </a>
+            <li key={a.id} className="flex items-center justify-between gap-2 rounded-lg bg-slate-50 p-2.5">
+              <span className="min-w-0">
+                <span className="block truncate text-sm font-medium text-slate-800">{a.fileName}</span>
+                <span className="block text-xs text-slate-500">{a.mimeType} · {formatBytes(a.fileSize)}</span>
+              </span>
+              <a href={a.fileUrl} target="_blank" rel="noreferrer" className="shrink-0 rounded-lg border border-line bg-white px-3 py-1.5 text-xs font-semibold text-accent-700">Abrir</a>
             </li>
           ))}
         </ul>
       ) : (
-        <p className="text-sm text-neutral-500">Nenhuma evidência anexada.</p>
+        <p className="text-sm text-slate-500">Nenhuma evidência anexada.</p>
       )}
-      <div className="mt-2 space-y-2">
-        <label className="block text-sm">
-          <span className="sr-only">Escolher arquivo</span>
-          <input type="file" onChange={(e) => setFile(e.target.files?.[0] ?? null)} className="touch-target block w-full text-sm" />
-        </label>
-        {file && <p className="text-xs text-neutral-500">{file.name} • {file.type || "tipo desconhecido"} • {formatBytes(file.size)}</p>}
-        <button onClick={send} disabled={!file || sending || attach.isPending} className="touch-target rounded-xl border px-4 font-semibold disabled:opacity-50">
+      <div className="mt-3 space-y-2">
+        <input type="file" onChange={(e) => setFile(e.target.files?.[0] ?? null)} className="block w-full text-sm" aria-label="Escolher arquivo" />
+        {file && <p className="text-xs text-slate-500">{file.name} · {file.type || "tipo desconhecido"} · {formatBytes(file.size)}</p>}
+        <button onClick={send} disabled={!file || sending || attach.isPending} className="rounded-lg border border-line px-4 py-2 text-sm font-semibold disabled:opacity-50">
           {sending || attach.isPending ? "Enviando…" : "Anexar evidência"}
         </button>
       </div>

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><title>HubAgendator</title><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "tertiary-fixed": "#dbe1ff", "surface-bright": "#faf8ff", "on-secondary": "#ffffff", "on-tertiary": "#ffffff", "primary-fixed": "#d7e2ff", "error-container": "#ffdad6", "on-tertiary-fixed": "#00174b", "secondary": "#00658d", "secondary-container": "#41befd", "error": "#ba1a1a", "surface-variant": "#dae2fd", "surface-container": "#eaedff", "surface-container-highest": "#dae2fd", "surface-container-lowest": "#ffffff", "secondary-fixed-dim": "#81cfff", "primary-container": "#0056b3", "on-primary": "#ffffff", "on-primary-fixed-variant": "#004491", "outline-variant": "#c2c6d4", "surface-tint": "#115cb9", "tertiary": "#00399d", "surface": "#faf8ff", "outline": "#727784", "on-primary-container": "#bbd0ff", "inverse-surface": "#283044", "on-secondary-container": "#004b69", "surface-container-high": "#e2e7ff", "on-error-container": "#93000a", "background": "#faf8ff", "on-tertiary-fixed-variant": "#003ea8", "on-error": "#ffffff", "on-background": "#131b2e", "on-primary-fixed": "#001a40", "on-surface-variant": "#424752", "inverse-on-surface": "#eef0ff", "on-secondary-fixed": "#001e2d", "on-surface": "#131b2e", "secondary-fixed": "#c6e7ff", "inverse-primary": "#acc7ff", "tertiary-fixed-dim": "#b4c5ff", "primary-fixed-dim": "#acc7ff", "on-tertiary-container": "#c1cfff", "on-secondary-fixed-variant": "#004c6b", "surface-dim": "#d2d9f4", "primary": "#003f87", "tertiary-container": "#004ecf", "surface-container-low": "#f2f3ff" }, "borderRadius": { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }, "spacing": { "space-xl": "1.5rem", "space-3xs": "0.125rem", "space-2xl": "2rem", "space-xs": "0.375rem", "space-2xs": "0.25rem", "margin-screen": "1.5rem", "space-sm": "0.5rem", "space-lg": "1.25rem", "space-base": "1rem", "gutter-default": "1rem", "space-md": "0.75rem", "gutter-compact": "0.75rem" }, "fontFamily": { "label-lg": ["Geist", "sans-serif"], "headline-md": ["Geist", "sans-serif"], "body-md": ["Geist", "sans-serif"], "body-lg": ["Geist", "sans-serif"], "headline-xl": ["Geist", "sans-serif"], "headline-lg": ["Geist", "sans-serif"], "label-sm": ["Geist", "sans-serif"], "body-sm": ["Geist", "sans-serif"], "label-md": ["Geist", "sans-serif"] }, "fontSize": { "label-lg": ["13px", { "lineHeight": "18px", "letterSpacing": "-0.005em", "fontWeight": "500" }], "headline-md": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400" }], "body-lg": ["15px", { "lineHeight": "22px", "letterSpacing": "-0.005em", "fontWeight": "400" }], "headline-xl": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "headline-lg": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "label-sm": ["10px", { "lineHeight": "12px", "letterSpacing": "0.05em", "fontWeight": "600" }], "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0em", "fontWeight": "400" }], "label-md": ["11px", { "lineHeight": "14px", "letterSpacing": "0.03em", "fontWeight": "600" }] } } } };</script><style>@layer base{html,body{width:100%;margin:0;padding:0;min-height:100vh;}body{overscroll-behavior-y:none;-webkit-tap-highlight-color:transparent;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}}::-webkit-scrollbar{display:none;}</style></head><body class="bg-surface font-body-md text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="h-16 px-space-md flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm min-w-0 flex-1"><img alt="logo.png" class="h-8 w-auto object-contain shrink-0" src="https://lh3.googleusercontent.com/aida/AEtjO1UzmgVq8OacfdkAybbLXI_ojJNDvaCDmSI7PTYszLRGiHwjuRl1-6BiQkNx-fR22souS_ymDejcxXLODFVwr9_mAtTq98Uz46_RSc93rpwX0rZRs1PL8dYnxEvr_xa0Fx94rv-oeVt1Px3vB9CFvmgys9lagTe364A3--TqckpNWolLjDXkn8u4VtfMdcrKT8jLLwMqIfgW9NRviL5C-ecYcmZSm2-IMublK1vIIEao5vw5aRMJtEnS080-8OVEuot7zwnvIoyQCQ"/><div class="flex flex-col min-w-0"><div class="flex items-center gap-space-2xs"><span class="font-label-md text-label-md text-on-surface truncate">HubAgendator</span><span class="material-symbols-outlined text-outline text-[14px]">verified</span></div><button class="flex items-center gap-space-3xs text-left group"><span class="font-label-sm text-label-sm text-on-surface-variant group-hover:text-primary truncate max-w-[130px]">Gestor (Carlos)</span><span class="material-symbols-outlined text-outline group-hover:text-primary text-[14px]">expand_more</span></button></div></div><div class="flex items-center gap-space-xs shrink-0"><button aria-label="Notificações" class="relative w-11 h-11 flex items-center justify-center rounded-lg text-on-surface-variant hover:text-on-surface transition-colors"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-error ring-2 ring-surface"></span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-16 pb-28 bg-surface"><div class="flex flex-col w-full">
+<!-- Top Operational Header & Summary Banner -->
+<div class="px-space-md py-space-sm flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Equipe Operacional</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Capacidade atual e distribuição de demandas em tempo real.</p>
+</div>
+<div class="flex items-center gap-space-2xs bg-surface-container px-space-xs py-space-3xs rounded-full shadow-sm">
+<span class="w-2 h-2 rounded-full bg-secondary-container animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-secondary font-medium uppercase tracking-wider">Ao Vivo</span>
+</div>
+</div>
+<!-- Quick Team Capacity Visual Pulse Bar -->
+<div class="bg-surface-container-low rounded-xl p-space-sm flex flex-col gap-space-2xs shadow-sm">
+<div class="flex items-center justify-between text-on-surface">
+<span class="font-label-md text-label-md text-on-surface-variant">Pressão de Carga da Frota</span>
+<span class="font-label-md text-label-md text-primary font-semibold">25 demandas ativas / 4 operadores</span>
+</div>
+<div class="w-full h-2 rounded-full bg-surface-container-high overflow-hidden flex">
+<div class="bg-error h-full" style="width: 12%;" title="Atrasadas (3)"></div>
+<div class="bg-secondary-container h-full" style="width: 36%;" title="Vencem Hoje (9)"></div>
+<div class="bg-primary h-full" style="width: 52%;" title="Em Andamento (13)"></div>
+</div>
+<div class="flex items-center justify-between pt-space-3xs text-on-surface-variant font-label-sm text-label-sm">
+<span class="flex items-center gap-space-3xs"><span class="w-2 h-2 rounded-full bg-primary"></span> 11 em rota</span>
+<span class="flex items-center gap-space-3xs"><span class="w-2 h-2 rounded-full bg-secondary-container"></span> 9 p/ hoje</span>
+<span class="flex items-center gap-space-3xs"><span class="w-2 h-2 rounded-full bg-error"></span> 3 atrasos operacionais</span>
+</div>
+</div>
+<!-- Filter Chips Horizontal Scroller -->
+<div class="flex items-center gap-space-xs overflow-x-auto py-space-2xs no-scrollbar">
+<button class="filter-btn active shrink-0 px-space-md py-space-xs rounded-full font-label-md text-label-md bg-primary text-on-primary shadow-sm transition-all" data-team="todas">
+        Todas as equipes (3)
+      </button>
+<button class="filter-btn shrink-0 px-space-md py-space-xs rounded-full font-label-md text-label-md bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-all" data-team="suporte">
+        Suporte Técnico
+      </button>
+<button class="filter-btn shrink-0 px-space-md py-space-xs rounded-full font-label-md text-label-md bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-all" data-team="infra">
+        Infraestrutura
+      </button>
+</div>
+</div>
+<!-- Operator Workload Cards Column -->
+<div class="px-space-md flex flex-col gap-space-md pt-space-2xs pb-space-lg">
+<!-- Card 1: Gisele -->
+<div class="team-card bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm relative overflow-hidden" data-category="suporte">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-error"></div>
+<div class="flex items-start justify-between gap-space-xs pl-space-xs">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="relative w-11 h-11 rounded-full overflow-hidden shrink-0 bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Portrait of Gisele, a professional Brazilian woman technician wearing a modern polo shirt in a bright office environment, smiling warmly with confidence." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAVcohuXmCFO_xY85sV3dc1mgrTb-7jmGxy7_dkdkPLzis5xGrO2e3nL1IVFD8MvNMCnL7L7Bc_y_JVdMYxOdtmyjVyFlfDi8S8FAO7P5vtBZSPhdqOxgtfpN1KiYcyYySojiH7qxtnSe9ktznguOnN1y1FvGP7724ApI23DeGTltAcjPx1LK4N1omeRoG-UcxVm3dL1Do2bRhxEXQOaYfU_IAiK7B26BCM78TFvhGiPYL-O2ttsV45"/>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-2xs">
+<span class="font-headline-md text-headline-md text-on-surface truncate">Gisele</span>
+<span class="font-label-sm text-label-sm text-secondary bg-surface-container px-space-2xs py-space-3xs rounded-full">Suporte</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Técnica de Suporte</span>
+</div>
+</div>
+<div class="flex flex-col items-end shrink-0">
+<span class="px-space-xs py-space-3xs rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm flex items-center gap-space-3xs font-semibold">
+<span class="material-symbols-outlined text-[14px]">warning</span> Carga Alta
+          </span>
+<span class="font-label-md text-label-md text-on-surface font-semibold mt-space-3xs">9 ativas</span>
+</div>
+</div>
+<!-- Pill Metrics Group (No Punitive KPIs) -->
+<div class="grid grid-cols-2 gap-space-2xs pl-space-xs">
+<div class="flex items-center justify-between px-space-xs py-space-2xs rounded-lg bg-surface-container-low">
+<span class="flex items-center gap-space-2xs font-body-sm text-body-sm text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-primary"></span> Em andamento
+          </span>
+<span class="font-label-md text-label-md text-on-surface font-bold">4</span>
+</div>
+<div class="flex items-center justify-between px-space-xs py-space-2xs rounded-lg bg-error-container/40">
+<span class="flex items-center gap-space-2xs font-body-sm text-body-sm text-on-error-container">
+<span class="w-2 h-2 rounded-full bg-error"></span> Atrasadas
+          </span>
+<span class="font-label-md text-label-md text-error font-bold">2</span>
+</div>
+<div class="flex items-center justify-between px-space-xs py-space-2xs rounded-lg bg-secondary-fixed/50">
+<span class="flex items-center gap-space-2xs font-body-sm text-body-sm text-on-secondary-fixed-variant">
+<span class="w-2 h-2 rounded-full bg-secondary"></span> Vencem hoje
+          </span>
+<span class="font-label-md text-label-md text-secondary font-bold">3</span>
+</div>
+<div class="flex items-center justify-between px-space-xs py-space-2xs rounded-lg bg-surface-container-low">
+<span class="flex items-center gap-space-2xs font-body-sm text-body-sm text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-tertiary-container"></span> Concluídas hoje
+          </span>
+<span class="font-label-md text-label-md text-on-surface font-bold">5</span>
+</div>
+</div>
+<!-- Active Task Snapshot -->
+<div class="pl-space-xs flex items-center gap-space-xs bg-surface-container-low p-space-xs rounded-lg">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0">radio_button_checked</span>
+<div class="min-w-0 flex-1">
+<div class="flex items-center justify-between gap-space-xs">
+<p class="font-body-md text-body-md text-on-surface font-medium truncate">Configurar computador — Mercado X</p>
+<span class="font-label-sm text-label-sm text-on-surface-variant shrink-0">há 15 min</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Em execução externa</span>
+</div>
+</div>
+<!-- Action Button -->
+<a class="mt-space-3xs w-full py-space-xs px-space-md rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md flex items-center justify-center gap-space-xs transition-colors active:scale-[0.99]" href="#">
+<span>Ver 9 tarefas de Gisele</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+<!-- Card 2: João -->
+<div class="team-card bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm relative overflow-hidden" data-category="infra">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-secondary-container"></div>
+<div class="flex items-start justify-between gap-space-xs pl-space-xs">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="relative w-11 h-11 rounded-full overflow-hidden shrink-0 bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Close-up portrait of João, a focused Brazilian IT network specialist with glasses and short hair, indoors near networking racks with calm daylight." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBfMB951DVZmK3kg9UZLU9BJZkK5Ir1z8YRsyellmb_x50CT9DlRZKhoFqHIubQdkuOb3TE3mKMtdCtlXxgfpLRWi40riywJ-r1XXNlVEamf1opSyuxbS0mU9rkROcnyWWAJtf1x4rdg3Si2_RRJdHJJjorI_OFqWbv5G7OFmqdxa-sHv9dI18vcGwnw2IF1b8P_f6I9Na7L_ZUqeAY9ECT-vhz4dI3GXma8JQ_LuVLvrta1nHvMtg6"/>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-2xs">
+<span class="font-headline-md text-headline-md text-on-surface truncate">João</span>
+<span class="font-label-sm text-label-sm text-secondary bg-surface-container px-space-2xs py-space-3xs rounded-full">Redes</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Especialista de Redes</span>
+</div>
+</div>
+<div class="flex flex-col items-end shrink-0">
+<span class="px-space-xs py-space-3xs rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm flex items-center gap-space-3xs font-semibold">
+<span class="material-symbols-outlined text-[14px]">check_circle</span> Equilibrada
+          </span>
+<span class="font-label-md text-label-md text-on-surface font-semibold mt-space-3xs">6 ativas</span>
+</div>
+</div>
+<!-- Pill Metrics Group -->
+<div class="grid grid-cols-2 gap-space-2xs pl-space-xs">
+<div class="flex items-center justify-between px-space-xs py-space-2xs rounded-lg bg-surface-container-low">
+<span class="flex items-center gap-space-2xs font-body-sm text-body-sm text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-primary"></span> Em andamento
+          </span>
+<span class="font-label-md text-label-md text-on-surface font-bold">2</span>
+</div>
+<div class="flex items-center justify-between px-space-xs py-space-2xs rounded-lg bg-surface-container-low">
+<span class="flex items-center gap-space-2xs font-body-sm text-body-sm text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-outline-variant"></span> Atrasadas
+          </span>
+<span class="font-label-md text-label-md text-on-surface-variant font-bold">0</span>
+</div>
+<div class="flex items-center justify-between px-space-xs py-space-2xs rounded-lg bg-secondary-fixed/50">
+<span class="flex items-center gap-space-2xs font-body-sm text-body-sm text-on-secondary-fixed-variant">
+<span class="w-2 h-2 rounded-full bg-secondary"></span> Vencem hoje
+          </span>
+<span class="font-label-md text-label-md text-secondary font-bold">4</span>
+</div>
+<div class="flex items-center justify-between px-space-xs py-space-2xs rounded-lg bg-surface-container-low">
+<span class="flex items-center gap-space-2xs font-body-sm text-body-sm text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-tertiary-container"></span> Concluídas hoje
+          </span>
+<span class="font-label-md text-label-md text-on-surface font-bold">3</span>
+</div>
+</div>
+<!-- Active Task Snapshot -->
+<div class="pl-space-xs flex items-center gap-space-xs bg-surface-container-low p-space-xs rounded-lg">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0">radio_button_checked</span>
+<div class="min-w-0 flex-1">
+<div class="flex items-center justify-between gap-space-xs">
+<p class="font-body-md text-body-md text-on-surface font-medium truncate">Troca de switch — Restaurante União</p>
+<span class="font-label-sm text-label-sm text-on-surface-variant shrink-0">há 40 min</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Em trânsito com equipamento</span>
+</div>
+</div>
+<!-- Action Button -->
+<a class="mt-space-3xs w-full py-space-xs px-space-md rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md flex items-center justify-center gap-space-xs transition-colors active:scale-[0.99]" href="#">
+<span>Ver 6 tarefas de João</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+<!-- Card 3: Maria -->
+<div class="team-card bg-surface-container-lowest rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm relative overflow-hidden" data-category="suporte">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-secondary"></div>
+<div class="flex items-start justify-between gap-space-xs pl-space-xs">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="relative w-11 h-11 rounded-full overflow-hidden shrink-0 bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Portrait of Maria, a friendly Brazilian systems analyst with tied hair, holding a clipboard in a tech workshop environment with soft natural lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_vux7ealDjZTzL6nKxY34_zK5EkUmc93nMNko5DfddsmIQamjmEErThR1anOwoLmj7bkG6a9MjG74R0wxWVdD_-8VWU9kX3cKwzXevhgJ9cesv0F519emjJx_NPrBTFb1KGP_lDMMYBoQHcbU9rNLwsC-SW7QGeVZklUvhkl7S-UhAr3KN3smAfQzAvnB_LzgqugBGObLnrHW0hNWRR8HVC2be37GXMXPKM5pblHGIAyFsnqGrQRC"/>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-2xs">
+<span class="font-headline-md text-headline-md text-on-surface truncate">Maria</span>
+<span class="font-label-sm text-label-sm text-secondary bg-surface-container px-space-2xs py-space-3xs rounded-full">Sistemas</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Analista de Sistemas</span>
+</div>
+</div>
+<div class="flex flex-col items-end shrink-0">
+<span class="px-space-xs py-space-3xs rounded-full bg-secondary-fixed-dim/40 text-on-secondary-fixed-variant font-label-sm text-label-sm flex items-center gap-space-3xs font-semibold">
+<span class="material-symbols-outlined text-[14px]">info</span> Atenção
+          </span>
+<span class="font-label-md text-label-md text-on-surface font-semibold mt-space-3xs">8 ativas</span>
+</div>
+</div>
+<!-- Pill Metrics Group -->
+<div class="grid grid-cols-2 gap-space-2xs pl-space-xs">
+<div class="flex items-center justify-between px-space-xs py-space-2xs rounded-lg bg-surface-container-low">
+<span class="flex items-center gap-space-2xs font-body-sm text-body-sm text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-primary"></span> Em andamento
+          </span>
+<span class="font-label-md text-label-md text-on-surface font-bold">5</span>
+</div>
+<div class="flex items-center justify-between px-space-xs py-space-2xs rounded-lg bg-error-container/30">
+<span class="flex items-center gap-space-2xs font-body-sm text-body-sm text-on-error-container">
+<span class="w-2 h-2 rounded-full bg-error"></span> Atrasadas
+          </span>
+<span class="font-label-md text-label-md text-error font-bold">1</span>
+</div>
+<div class="flex items-center justify-between px-space-xs py-space-2xs rounded-lg bg-secondary-fixed/50">
+<span class="flex items-center gap-space-2xs font-body-sm text-body-sm text-on-secondary-fixed-variant">
+<span class="w-2 h-2 rounded-full bg-secondary"></span> Vencem hoje
+          </span>
+<span class="font-label-md text-label-md text-secondary font-bold">2</span>
+</div>
+<div class="flex items-center justify-between px-space-xs py-space-2xs rounded-lg bg-surface-container-low">
+<span class="flex items-center gap-space-2xs font-body-sm text-body-sm text-on-surface-variant">
+<span class="w-2 h-2 rounded-full bg-tertiary-container"></span> Concluídas hoje
+          </span>
+<span class="font-label-md text-label-md text-on-surface font-bold">4</span>
+</div>
+</div>
+<!-- Active Task Snapshot -->
+<div class="pl-space-xs flex items-center gap-space-xs bg-surface-container-low p-space-xs rounded-lg">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0">radio_button_checked</span>
+<div class="min-w-0 flex-1">
+<div class="flex items-center justify-between gap-space-xs">
+<p class="font-body-md text-body-md text-on-surface font-medium truncate">Instalação de PDV — Loja Central</p>
+<span class="font-label-sm text-label-sm text-on-surface-variant shrink-0">há 25 min</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Finalizando parametrização fiscal</span>
+</div>
+</div>
+<!-- Action Button -->
+<a class="mt-space-3xs w-full py-space-xs px-space-md rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface font-label-md text-label-md flex items-center justify-center gap-space-xs transition-colors active:scale-[0.99]" href="#">
+<span>Ver 8 tarefas de Maria</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+<!-- Card 4: Carlos (Gestor Operacional / Visão de Coordenação) -->
+<div class="team-card bg-surface-container-low rounded-xl p-space-md shadow-sm flex flex-col gap-space-sm relative overflow-hidden" data-category="gestao">
+<div class="flex items-center justify-between gap-space-xs">
+<div class="flex items-center gap-space-sm min-w-0">
+<div class="w-11 h-11 rounded-full bg-primary flex items-center justify-center shrink-0 shadow-sm">
+<span class="material-symbols-outlined text-on-primary text-[20px]">manage_accounts</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-space-2xs">
+<span class="font-headline-md text-headline-md text-on-surface truncate">Carlos</span>
+<span class="font-label-sm text-label-sm text-primary-container bg-primary-fixed px-space-2xs py-space-3xs rounded-full">Líder</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Gestor Operacional</span>
+</div>
+</div>
+<span class="px-space-xs py-space-3xs rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm">
+          Coordenação
+        </span>
+</div>
+<!-- Coordination Metrics -->
+<div class="grid grid-cols-2 gap-space-sm pt-space-3xs">
+<div class="flex items-center gap-space-sm bg-surface-container-lowest p-space-sm rounded-lg shadow-sm">
+<div class="w-8 h-8 rounded-full bg-tertiary-fixed flex items-center justify-center text-on-tertiary-fixed shrink-0">
+<span class="material-symbols-outlined text-[18px]">rate_review</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-headline-md text-on-surface font-bold">2</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Para revisão</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm bg-surface-container-lowest p-space-sm rounded-lg shadow-sm">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed shrink-0">
+<span class="material-symbols-outlined text-[18px]">assignment_turned_in</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-headline-md text-on-surface font-bold">7</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant truncate">Atribuídas hoje</span>
+</div>
+</div>
+</div>
+<!-- Manager Rebalance Insight Note -->
+<div class="flex items-center justify-between text-on-surface-variant pt-space-3xs font-body-sm text-body-sm bg-surface-container-lowest/60 px-space-sm py-space-2xs rounded-lg">
+<span class="flex items-center gap-space-2xs text-secondary">
+<span class="material-symbols-outlined text-[16px]">balance</span>
+          Sugestão: Deslocar 1 chamado de Gisele para João
+        </span>
+<button class="font-label-sm text-label-sm text-primary font-bold hover:underline shrink-0">Rebalancear</button>
+</div>
+</div>
+</div>
+<script>
+    (function() {
+      const filterBtns = document.querySelectorAll('.filter-btn');
+      const teamCards = document.querySelectorAll('.team-card');
+
+      filterBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          filterBtns.forEach(b => {
+            b.classList.remove('bg-primary', 'text-on-primary', 'active');
+            b.classList.add('bg-surface-container', 'text-on-surface-variant');
+          });
+
+          btn.classList.remove('bg-surface-container', 'text-on-surface-variant');
+          btn.classList.add('bg-primary', 'text-on-primary', 'active');
+
+          const category = btn.getAttribute('data-team');
+
+          teamCards.forEach(card => {
+            const cardCat = card.getAttribute('data-category');
+            if (category === 'todas') {
+              card.style.display = 'flex';
+            } else if (category === 'suporte' && (cardCat === 'suporte' || cardCat === 'gestao')) {
+              card.style.display = 'flex';
+            } else if (category === 'infra' && (cardCat === 'infra' || cardCat === 'gestao')) {
+              card.style.display = 'flex';
+            } else {
+              card.style.display = 'none';
+            }
+          });
+        });
+      });
+    })();
+  </script>
+</div></main><div class="fixed bottom-20 right-space-base z-40 pb-safe"><a class="flex items-center gap-space-xs px-space-base h-12 rounded-full bg-primary text-on-primary shadow-[0_4px_16px_rgba(0,63,135,0.28)] hover:bg-primary-container transition-all active:scale-95" data-path="nova-tarefa" href="#"><span class="material-symbols-outlined text-[20px]">add</span><span class="font-label-lg text-label-lg">Nova Tarefa</span></a></div><nav class="fixed bottom-0 w-full z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.04)]" data-active-classes="text-primary font-semibold"><div class="flex justify-around items-center h-16 px-space-xs"><a class="flex flex-col items-center justify-center gap-space-3xs w-16 h-12 text-on-surface-variant hover:text-on-surface transition-colors" data-path="inicio" href="#"><span class="material-symbols-outlined text-[22px]">dashboard</span><span class="font-label-sm text-label-sm">Início</span></a><a class="flex flex-col items-center justify-center gap-space-3xs w-16 h-12 text-on-surface-variant hover:text-on-surface transition-colors" data-path="tarefas" href="#"><span class="material-symbols-outlined text-[22px]">format_list_bulleted</span><span class="font-label-sm text-label-sm">Tarefas</span></a><a aria-current="page" class="flex flex-col items-center justify-center gap-space-3xs w-16 h-12 transition-colors text-primary font-semibold" data-path="equipe" href="#"><span class="material-symbols-outlined text-[22px]">group</span><span class="font-label-sm text-label-sm">Equipe</span></a><a class="flex flex-col items-center justify-center gap-space-3xs w-16 h-12 relative text-on-surface-variant hover:text-on-surface transition-colors" data-path="mais" href="#"><div class="relative flex items-center justify-center"><span class="material-symbols-outlined text-[22px]">more_horiz</span><span class="absolute -top-1 -right-2 min-w-[14px] h-[14px] px-0.5 rounded-full bg-error text-on-error font-label-sm text-[9px] leading-none flex items-center justify-center font-bold">3</span></div><span class="font-label-sm text-label-sm">Mais</span></a></div></nav></body></html>

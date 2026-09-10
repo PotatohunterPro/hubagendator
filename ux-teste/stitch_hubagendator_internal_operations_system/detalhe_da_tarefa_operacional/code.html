@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+
+<html class="light" lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><title>Detalhes Da Tarefa | HubAgendator</title><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "tertiary-fixed": "#dbe1ff", "surface-bright": "#faf8ff", "on-secondary": "#ffffff", "on-tertiary": "#ffffff", "primary-fixed": "#d7e2ff", "error-container": "#ffdad6", "on-tertiary-fixed": "#00174b", "secondary": "#00658d", "secondary-container": "#41befd", "error": "#ba1a1a", "surface-variant": "#dae2fd", "surface-container": "#eaedff", "surface-container-highest": "#dae2fd", "surface-container-lowest": "#ffffff", "secondary-fixed-dim": "#81cfff", "primary-container": "#0056b3", "on-primary": "#ffffff", "on-primary-fixed-variant": "#004491", "outline-variant": "#c2c6d4", "surface-tint": "#115cb9", "tertiary": "#00399d", "surface": "#faf8ff", "outline": "#727784", "on-primary-container": "#bbd0ff", "inverse-surface": "#283044", "on-secondary-container": "#004b69", "surface-container-high": "#e2e7ff", "on-error-container": "#93000a", "background": "#faf8ff", "on-tertiary-fixed-variant": "#003ea8", "on-error": "#ffffff", "on-background": "#131b2e", "on-primary-fixed": "#001a40", "on-surface-variant": "#424752", "inverse-on-surface": "#eef0ff", "on-secondary-fixed": "#001e2d", "on-surface": "#131b2e", "secondary-fixed": "#c6e7ff", "inverse-primary": "#acc7ff", "tertiary-fixed-dim": "#b4c5ff", "primary-fixed-dim": "#acc7ff", "on-tertiary-container": "#c1cfff", "on-secondary-fixed-variant": "#004c6b", "surface-dim": "#d2d9f4", "primary": "#003f87", "tertiary-container": "#004ecf", "surface-container-low": "#f2f3ff" }, "borderRadius": { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" }, "spacing": { "space-xl": "1.5rem", "space-3xs": "0.125rem", "space-2xl": "2rem", "space-xs": "0.375rem", "space-2xs": "0.25rem", "margin-screen": "1.5rem", "space-sm": "0.5rem", "space-lg": "1.25rem", "space-base": "1rem", "gutter-default": "1rem", "space-md": "0.75rem", "gutter-compact": "0.75rem" }, "fontFamily": { "label-lg": ["Geist", "sans-serif"], "headline-md": ["Geist", "sans-serif"], "body-md": ["Geist", "sans-serif"], "body-lg": ["Geist", "sans-serif"], "headline-xl": ["Geist", "sans-serif"], "headline-lg": ["Geist", "sans-serif"], "label-sm": ["Geist", "sans-serif"], "body-sm": ["Geist", "sans-serif"], "label-md": ["Geist", "sans-serif"] }, "fontSize": { "label-lg": ["13px", { "lineHeight": "18px", "letterSpacing": "-0.005em", "fontWeight": "500" }], "headline-md": ["18px", { "lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600" }], "body-md": ["13px", { "lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400" }], "body-lg": ["15px", { "lineHeight": "22px", "letterSpacing": "-0.005em", "fontWeight": "400" }], "headline-xl": ["28px", { "lineHeight": "36px", "letterSpacing": "-0.02em", "fontWeight": "600" }], "headline-lg": ["22px", { "lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "600" }], "label-sm": ["10px", { "lineHeight": "12px", "letterSpacing": "0.05em", "fontWeight": "600" }], "body-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0em", "fontWeight": "400" }], "label-md": ["11px", { "lineHeight": "14px", "letterSpacing": "0.03em", "fontWeight": "600" }] } } } };</script><style>@layer base{html,body{width:100%;margin:0;padding:0;min-height:100vh;}body{overscroll-behavior-y:none;-webkit-tap-highlight-color:transparent;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}}::-webkit-scrollbar{display:none;}</style></head><body class="bg-surface font-body-md text-on-surface flex flex-col min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed"><header class="fixed top-0 w-full z-50 pt-safe bg-surface/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="h-14 px-space-sm flex items-center justify-between gap-space-xs"><div class="flex items-center gap-space-2xs min-w-0 flex-1"><button aria-label="Voltar" class="w-11 h-11 flex items-center justify-center rounded-lg text-on-surface hover:bg-surface-container transition-colors shrink-0" onclick="history.back()"><span class="material-symbols-outlined text-[22px]">arrow_back</span></button><img alt="logo.png" class="h-8 w-auto object-contain shrink-0 hidden sm:block" src="https://lh3.googleusercontent.com/aida/AEtjO1UzmgVq8OacfdkAybbLXI_ojJNDvaCDmSI7PTYszLRGiHwjuRl1-6BiQkNx-fR22souS_ymDejcxXLODFVwr9_mAtTq98Uz46_RSc93rpwX0rZRs1PL8dYnxEvr_xa0Fx94rv-oeVt1Px3vB9CFvmgys9lagTe364A3--TqckpNWolLjDXkn8u4VtfMdcrKT8jLLwMqIfgW9NRviL5C-ecYcmZSm2-IMublK1vIIEao5vw5aRMJtEnS080-8OVEuot7zwnvIoyQCQ"/><h1 class="font-headline-md text-headline-md text-on-surface truncate">Detalhes Da Tarefa</h1></div><div class="flex items-center gap-space-xs shrink-0"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex-1 flex flex-col relative w-full pt-14 bg-surface pb-safe"><div class="flex flex-col w-full">
+<!-- Status & Context Ribbon -->
+<div class="px-margin-screen py-space-sm bg-surface-container-low flex items-center justify-between gap-space-xs">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-secondary-container text-on-secondary-container font-label-sm text-label-sm uppercase tracking-wide shadow-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+        Em Andamento
+      </span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-error-container text-on-error-container font-label-sm text-label-sm uppercase tracking-wide">
+<span class="material-symbols-outlined text-[13px]">flag</span>
+        Alta Prioridade
+      </span>
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[13px]">storefront</span>
+        Mercado X
+      </span>
+</div>
+<div class="flex items-center gap-1 text-error font-label-md text-label-md shrink-0 bg-error-container/40 px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+<span>Restam 45m</span>
+</div>
+</div>
+<div class="px-margin-screen pt-space-md pb-space-2xl space-y-space-lg">
+<!-- Subheader Navigation & Title Area -->
+<div>
+<a class="inline-flex items-center gap-1 text-secondary font-label-md text-label-md mb-space-2xs active:opacity-75 transition-opacity" href="javascript:history.back()">
+<span class="material-symbols-outlined text-[16px]">chevron_left</span>
+        Minhas Tarefas
+      </a>
+<h2 class="font-headline-lg text-headline-lg text-on-surface leading-tight">
+        Configurar computador do Mercado X
+      </h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-space-3xs flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px] text-outline">verified</span>
+        Ordem de Serviço #OS-8492 · Estação PDV 01
+      </p>
+</div>
+<!-- Metadata Bento Grid -->
+<div class="grid grid-cols-2 gap-space-xs">
+<!-- Assigned Lead -->
+<div class="bg-surface-container-lowest p-space-sm rounded-xl shadow-sm flex items-center gap-space-xs">
+<div class="relative w-10 h-10 rounded-full overflow-hidden shrink-0 bg-surface-variant">
+<img class="w-full h-full object-cover" data-alt="Close up professional portrait of Gisele, a dedicated tech specialist with focused friendly expression wearing corporate blue polo in a brightly lit modern IT hub, crisp natural lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB7njCYen7lKzdGvfaHmen6TMdHiqooXgwIeixADZ7YNzbdXD1m8FYNX1kqWTvdHNJChPBnOvj9PPpSp6GtImAYKXNSS-xa0g-I4_dNs0aOpNQ1m9JNJ9QPOkm635-ij8udQ8IlUYlB7FZ1N3_L0lM3KlKjMNzkydkcjbDuvirN2WfcT0G0gHJxMtR848ZQZB3_6CIS_A9fpahsMYoxwvDK1v90Cgs6_j8TZ7WmkFXjYk8av4MkFkDf"/>
+<span class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-secondary-container"></span>
+</div>
+<div class="min-w-0 flex-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant block uppercase tracking-wider">Responsável</span>
+<p class="font-label-lg text-label-lg text-on-surface truncate">Gisele Silva</p>
+<span class="font-body-sm text-body-sm text-outline block truncate">Técnica Nível II</span>
+</div>
+</div>
+<!-- SLA Deadline -->
+<div class="bg-surface-container-lowest p-space-sm rounded-xl shadow-sm flex items-center gap-space-xs">
+<div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center shrink-0 text-primary">
+<span class="material-symbols-outlined text-[20px]">timer</span>
+</div>
+<div class="min-w-0 flex-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant block uppercase tracking-wider">Prazo Fatal</span>
+<p class="font-label-lg text-label-lg text-error truncate">Hoje, 16:00</p>
+<span class="font-body-sm text-body-sm text-outline block truncate">Criado por Carlos</span>
+</div>
+</div>
+</div>
+<!-- Primary Operational Action Bar -->
+<div class="space-y-space-xs">
+<div class="flex gap-space-xs">
+<!-- Complete Action (Dominant) -->
+<button class="flex-1 h-11 bg-primary text-on-primary rounded-xl font-label-lg text-label-lg flex items-center justify-center gap-space-xs shadow-md active:scale-[0.98] transition-transform" id="btn-complete-task">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span>Concluir Tarefa</span>
+</button>
+<!-- Notify / Poke Team -->
+<button class="px-space-md h-11 bg-secondary-fixed text-on-secondary-fixed rounded-xl font-label-lg text-label-lg flex items-center justify-center gap-1.5 shadow-sm active:bg-secondary-fixed-dim transition-colors">
+<span class="material-symbols-outlined text-[18px]">notifications_active</span>
+<span class="hidden sm:inline">Cobrar /</span> Notificar
+        </button>
+<!-- Secondary Actions Trigger -->
+<div class="relative">
+<button aria-label="Mais opções operacionais" class="w-11 h-11 bg-surface-container-high text-on-surface-variant rounded-xl flex items-center justify-center shadow-sm active:bg-surface-container-highest transition-colors" id="btn-more-actions">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+<!-- Popover Menu -->
+<div class="hidden absolute right-0 top-12 w-52 bg-surface-container-lowest rounded-xl shadow-xl z-20 py-1.5 transition-all" id="dropdown-more">
+<button class="w-full px-space-md py-2 text-left font-body-sm text-body-sm text-on-surface hover:bg-surface-container flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-outline">person_add</span>
+              Alterar responsável
+            </button>
+<button class="w-full px-space-md py-2 text-left font-body-sm text-body-sm text-on-surface hover:bg-surface-container flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-outline">event_upcoming</span>
+              Alterar prazo / SLA
+            </button>
+<button class="w-full px-space-md py-2 text-left font-body-sm text-body-sm text-error hover:bg-error-container/30 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-error">restart_alt</span>
+              Reabrir tarefa
+            </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Description Card -->
+<section class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<div class="flex items-center justify-between mb-space-xs">
+<h3 class="font-headline-md text-headline-md text-on-surface flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-secondary">terminal</span>
+          Descrição Operacional
+        </h3>
+<span class="font-label-sm text-label-sm text-on-surface-variant bg-surface-container px-2 py-0.5 rounded-full">SOP #04</span>
+</div>
+<div class="bg-surface-container-low p-space-sm rounded-lg font-body-md text-body-md text-on-surface leading-relaxed">
+        Instalação limpa do Windows 11, configuração do client de banco de dados, conexão com a impressora térmica não fiscal Elgin e teste de impressão na porta COM3.
+      </div>
+</section>
+<!-- Operational Timeline & Real-time Log Feed -->
+<section class="space-y-space-sm">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md text-on-surface flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-tertiary">chat_bubble</span>
+          Timeline Operacional
+        </h3>
+<span class="font-label-sm text-label-sm text-secondary bg-secondary-fixed/50 px-2 py-0.5 rounded-full flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+          Tempo Real
+        </span>
+</div>
+<!-- Feed Container -->
+<div class="space-y-space-xs" id="timeline-feed">
+<!-- Update 1 -->
+<div class="bg-surface-container-lowest p-space-sm rounded-xl shadow-sm flex items-start gap-space-sm">
+<div class="w-8 h-8 rounded-full overflow-hidden shrink-0 bg-surface-variant">
+<img class="w-full h-full object-cover" data-alt="Headshot of Gisele smiling subtly, wearing smart headset in technical service callcenter, soft bokeh background with server monitors." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBv-bw_qsWVCxqqj6GVMn2MbHEoyjiyLoFaZnY3x_nutMa86sZZggkgd4M_U6F8NjBhnvw7grduORB2G22q6neLOWnlxKr5Zf7_redpv5X6sRsjd4dy8XlRakUavjqxrPRY8wHHtaxWrQOESUIbM5AmSudUUkJ1fN9oSRKx3_W68yIo3rpDc1SG7Sa3dLBdc9FqcjHwkD0hGnYHCgv6YKK9t7o3Suefy3en-0jwMFp5E5G7K0FWTSy"/>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-baseline justify-between mb-0.5">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Gisele</span>
+<span class="font-label-sm text-label-sm text-outline">10:32</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant bg-surface-container-low p-space-xs rounded-lg">
+              Windows instalado com sucesso. Agora iniciando instalação dos drivers e da impressora.
+            </p>
+</div>
+</div>
+<!-- Update 2: Manager Message -->
+<div class="bg-surface-container-high/60 p-space-sm rounded-xl shadow-sm flex items-start gap-space-sm">
+<div class="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center shrink-0 font-label-md text-label-md text-on-primary-fixed">
+            CG
+          </div>
+<div class="flex-1 min-w-0">
+<div class="flex items-baseline justify-between mb-0.5">
+<div class="flex items-center gap-1.5">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Carlos</span>
+<span class="font-label-sm text-label-sm bg-primary-container text-on-primary-container px-1.5 py-0.2 rounded">Gestor</span>
+</div>
+<span class="font-label-sm text-label-sm text-outline">10:45</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface bg-surface-container-lowest p-space-xs rounded-lg">
+              Gisele, por favor certifique-se de configurar o acesso remoto AnyDesk e colar a etiqueta com o ID na CPU.
+            </p>
+</div>
+</div>
+<!-- Update 3 -->
+<div class="bg-surface-container-lowest p-space-sm rounded-xl shadow-sm flex items-start gap-space-sm">
+<div class="w-8 h-8 rounded-full overflow-hidden shrink-0 bg-surface-variant">
+<img class="w-full h-full object-cover" data-alt="Portrait photo of Gisele smiling confidently in an office setting, professional field tech specialist." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0uDFjXogAgEFhxijGHQI1-YRmX3JLGb1UB52uYW7seWUgC3k1_CMXKrapRDFCTamZ6aee8e9GtThbtoFPuVScvHUeqK8pHg1x2OUmqCOvJnkXEasyprCqTu5HOhNJ6exOsVCMUyFs9gLKD2bGXIJZH-mQHqd8LR3_HRyHkN2AFtkbc1WJ25N58PTKwvPqwAeXCVN3Ye8AXB5_4LHy82VYILDG7GFZnKg0We9fza7eFtfTz8MnY4vE"/>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-baseline justify-between mb-0.5">
+<span class="font-label-md text-label-md text-on-surface font-semibold">Gisele</span>
+<span class="font-label-sm text-label-sm text-outline">11:15</span>
+</div>
+<div class="bg-surface-container-low p-space-xs rounded-lg space-y-1">
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                AnyDesk configurado: <code class="font-mono bg-surface-container px-1 rounded text-primary font-medium">982 112 404</code>. Teste de cupom ok.
+              </p>
+<div class="inline-flex items-center gap-1 text-[11px] text-secondary font-medium">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+                Validado via COM3
+              </div>
+</div>
+</div>
+</div>
+</div>
+<!-- Add New Update Input Box -->
+<form class="bg-surface-container-lowest p-space-sm rounded-xl shadow-sm space-y-space-xs" id="comment-form" onsubmit="event.preventDefault(); addComment();">
+<textarea class="w-full bg-surface-container-low text-on-surface placeholder:text-outline font-body-sm text-body-sm p-space-xs rounded-lg resize-none focus:outline-none focus:bg-surface-container transition-colors" id="comment-input" placeholder="Adicionar uma atualização operacional..." rows="2"></textarea>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1">
+<button class="w-8 h-8 rounded-lg bg-surface-container-high text-on-surface-variant flex items-center justify-center hover:bg-surface-container-highest transition-colors active:scale-95" onclick="document.getElementById('file-upload').click()" title="Anexar arquivo ou foto" type="button">
+<span class="material-symbols-outlined text-[18px]">attach_file</span>
+</button>
+<input class="hidden" id="file-upload" onchange="previewAttachment(this)" type="file"/>
+<button class="w-8 h-8 rounded-lg bg-surface-container-high text-on-surface-variant flex items-center justify-center hover:bg-surface-container-highest transition-colors active:scale-95" title="Tirar foto com a câmera" type="button">
+<span class="material-symbols-outlined text-[18px]">photo_camera</span>
+</button>
+<span class="font-label-sm text-label-sm text-on-surface-variant truncate max-w-[120px]" id="file-chosen"></span>
+</div>
+<button class="h-8 px-space-md bg-secondary text-on-secondary font-label-md text-label-md rounded-lg flex items-center gap-1 shadow-sm active:scale-95 transition-transform" type="submit">
+<span>Enviar Atualização</span>
+<span class="material-symbols-outlined text-[15px]">send</span>
+</button>
+</div>
+</form>
+</section>
+<!-- Evidences & Attachments Section -->
+<section class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm space-y-space-sm">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md text-on-surface flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-primary">folder_open</span>
+          Evidências e Anexos (2)
+        </h3>
+<button class="font-label-md text-label-md text-secondary hover:underline">Baixar todos</button>
+</div>
+<div class="grid grid-cols-1 gap-space-xs">
+<!-- Item 1: Photo Evidence -->
+<div class="bg-surface-container-low p-space-xs rounded-xl flex items-center justify-between gap-space-xs hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-space-xs min-w-0">
+<div class="w-12 h-12 rounded-lg bg-surface-container-high overflow-hidden shrink-0 flex items-center justify-center">
+<img class="w-full h-full object-cover" data-alt="Close-up shot of thermal printed grocery receipt test ticket coming out of a black Elgin printer on a clean retail wooden counter." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA0D-qXk3TE_is29SFBr_e4BX0uwJjRhx4FrntUyNVa-VxnzHasd5oUwTVvt61SegeFNCCNc2wuL_zIYWckW1RitN6wSpsllAco61X3HCryAHAzdnXZDkMF2aTK8j6QV0CaUD0cjLFCntANu92wFqahY08SC-Q1_rYtisO56dDgtYEHP3Sgwzgb6EfFUd7Kp53IpruS7m4s33u8G0VG0kyoyhg1Lh8PYkrSidmPPJpXEJhRZdtsmwDF"/>
+</div>
+<div class="min-w-0">
+<p class="font-label-lg text-label-lg text-on-surface truncate">foto-teste-impressao.jpg</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant truncate">1.8 MB · por Gisele · há 20 min</p>
+</div>
+</div>
+<button class="px-space-sm py-1 rounded-lg bg-surface-container-highest text-on-surface font-label-md text-label-md shrink-0 flex items-center gap-1 hover:bg-surface-variant active:scale-95">
+<span class="material-symbols-outlined text-[14px]">visibility</span>
+            Visualizar
+          </button>
+</div>
+<!-- Item 2: PDF Checklist Report -->
+<div class="bg-surface-container-low p-space-xs rounded-xl flex items-center justify-between gap-space-xs hover:bg-surface-container transition-colors">
+<div class="flex items-center gap-space-xs min-w-0">
+<div class="w-12 h-12 rounded-lg bg-error-container text-on-error-container shrink-0 flex items-center justify-center">
+<span class="material-symbols-outlined text-[24px]">description</span>
+</div>
+<div class="min-w-0">
+<p class="font-label-lg text-label-lg text-on-surface truncate">relatorio-checklist.pdf</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant truncate">420 KB · por Gisele · há 35 min</p>
+</div>
+</div>
+<button class="px-space-sm py-1 rounded-lg bg-surface-container-highest text-on-surface font-label-md text-label-md shrink-0 flex items-center gap-1 hover:bg-surface-variant active:scale-95">
+<span class="material-symbols-outlined text-[14px]">download</span>
+            Abrir
+          </button>
+</div>
+</div>
+</section>
+<!-- Discreet Audit Trail Section -->
+<section class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm">
+<details class="group">
+<summary class="flex items-center justify-between cursor-pointer list-none select-none">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px] text-outline">history</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">Histórico de Auditoria</h3>
+</div>
+<span class="material-symbols-outlined text-[20px] text-outline group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<div class="mt-space-md pl-2 space-y-space-sm border-l-0">
+<div class="flex items-start gap-space-xs">
+<span class="w-2 h-2 rounded-full bg-outline shrink-0 mt-1"></span>
+<div class="font-body-sm text-body-sm text-on-surface-variant">
+<strong class="font-semibold text-on-surface">Carlos</strong> criou a tarefa · <span class="text-outline">Hoje às 08:00</span>
+</div>
+</div>
+<div class="flex items-start gap-space-xs">
+<span class="w-2 h-2 rounded-full bg-outline shrink-0 mt-1"></span>
+<div class="font-body-sm text-body-sm text-on-surface-variant">
+<strong class="font-semibold text-on-surface">Carlos</strong> atribuiu para Gisele · <span class="text-outline">Hoje às 08:02</span>
+</div>
+</div>
+<div class="flex items-start gap-space-xs">
+<span class="w-2 h-2 rounded-full bg-secondary shrink-0 mt-1"></span>
+<div class="font-body-sm text-body-sm text-on-surface-variant">
+<strong class="font-semibold text-on-surface">Gisele</strong> alterou status para <span class="text-secondary font-medium">Em Andamento</span> · <span class="text-outline">Hoje às 09:15</span>
+</div>
+</div>
+<div class="flex items-start gap-space-xs">
+<span class="w-2 h-2 rounded-full bg-primary shrink-0 mt-1"></span>
+<div class="font-body-sm text-body-sm text-on-surface-variant">
+<strong class="font-semibold text-on-surface">Gisele</strong> adicionou 2 anexos · <span class="text-outline">Hoje às 11:20</span>
+</div>
+</div>
+</div>
+</details>
+</section>
+<!-- Interactive Completion Banner Toast (Hidden by default) -->
+<div class="fixed bottom-6 left-4 right-4 bg-primary text-on-primary p-space-md rounded-xl shadow-2xl flex items-center justify-between gap-2 z-50 transform translate-y-32 transition-transform duration-300 pointer-events-none" id="toast-success">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[24px]">task_alt</span>
+<span class="font-label-lg text-label-lg">Tarefa concluída e validada com sucesso!</span>
+</div>
+<button class="text-on-primary/80 hover:text-on-primary" onclick="dismissToast()">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</button>
+</div>
+</div>
+</div>
+<script>
+  // Dropdown toggle
+  const moreBtn = document.getElementById('btn-more-actions');
+  const dropdown = document.getElementById('dropdown-more');
+  
+  if (moreBtn && dropdown) {
+    moreBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      dropdown.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', () => {
+      if (!dropdown.classList.contains('hidden')) {
+        dropdown.classList.add('hidden');
+      }
+    });
+  }
+
+  // Completion Micro-interaction
+  const completeBtn = document.getElementById('btn-complete-task');
+  const toast = document.getElementById('toast-success');
+
+  if (completeBtn && toast) {
+    completeBtn.addEventListener('click', () => {
+      toast.classList.remove('translate-y-32', 'pointer-events-none');
+      completeBtn.innerHTML = `
+        <span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+        <span>Concluída!</span>
+      `;
+      completeBtn.classList.replace('bg-primary', 'bg-tertiary-container');
+      setTimeout(() => {
+        dismissToast();
+      }, 3500);
+    });
+  }
+
+  function dismissToast() {
+    if (toast) {
+      toast.classList.add('translate-y-32', 'pointer-events-none');
+    }
+  }
+
+  function previewAttachment(input) {
+    const label = document.getElementById('file-chosen');
+    if (input.files && input.files[0]) {
+      label.textContent = input.files[0].name;
+    }
+  }
+
+  function addComment() {
+    const input = document.getElementById('comment-input');
+    const feed = document.getElementById('timeline-feed');
+    const text = input.value.trim();
+    if (!text) return;
+
+    const now = new Date();
+    const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+    const newComment = document.createElement('div');
+    newComment.className = 'bg-surface-container-lowest p-space-sm rounded-xl shadow-sm flex items-start gap-space-sm transition-all duration-300';
+    newComment.innerHTML = `
+      <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0 font-label-md text-label-md text-on-primary">
+        EU
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-baseline justify-between mb-0.5">
+          <span class="font-label-md text-label-md text-on-surface font-semibold">Você</span>
+          <span class="font-label-sm text-label-sm text-outline">${timeStr}</span>
+        </div>
+        <p class="font-body-sm text-body-sm text-on-surface-variant bg-surface-container-low p-space-xs rounded-lg">
+          ${text.replace(/</g, "&lt;").replace(/>/g, "&gt;")}
+        </p>
+      </div>
+    `;
+
+    feed.appendChild(newComment);
+    input.value = '';
+    const label = document.getElementById('file-chosen');
+    if (label) label.textContent = '';
+  }
+</script></main></body></html>

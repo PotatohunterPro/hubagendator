@@ -523,10 +523,14 @@ export const tasksRouter = router({
       const d = new Date(t.dueAt);
       return d >= startDay && d <= today;
     });
+    // Sem atualização: em andamento sem atividade há mais de 24h (plano2.0 #5).
+    const staleCutoff = new Date(Date.now() - 24 * 3600 * 1000);
+    const stale = base.filter((t) => t.status === "in_progress" && new Date(t.updatedAt) < staleCutoff);
 
-    const [overdueItems, dueTodayItems] = await Promise.all([
+    const [overdueItems, dueTodayItems, staleItems] = await Promise.all([
       enrich(db, sortOperational(overdue).slice(0, 5)),
       enrich(db, sortOperational(dueToday).slice(0, 5)),
+      enrich(db, sortOperational(stale).slice(0, 5)),
     ]);
 
     const countable = base.filter((t) => t.status !== "archived");
@@ -538,6 +542,7 @@ export const tasksRouter = router({
       inProgress: base.filter((t) => t.status === "in_progress").length,
       completedToday: base.filter((t) => t.status === "completed" && t.completedAt && new Date(t.completedAt) >= startDay).length,
       noDueDate: base.filter((t) => !t.dueAt && open(t)).length,
+      stale: stale.length,
       // Taxa de conclusão — plano2.0 #15 (só operação, sem BI).
       completion: {
         rate: countable.length ? Math.round((doneCount / countable.length) * 100) : 0,
@@ -546,6 +551,7 @@ export const tasksRouter = router({
       },
       overdueItems,
       dueTodayItems,
+      staleItems,
     };
   }),
 

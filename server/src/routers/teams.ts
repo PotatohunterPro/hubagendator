@@ -2,7 +2,8 @@
 import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
-import { teamMembers, teams, users } from "../../../drizzle/schema.js";
+import { isOverdue } from "@hubagendor/shared";
+import { organizationMembers, tasks, teamMembers, teams, users } from "../../../drizzle/schema.js";
 import { getDb } from "../db.js";
 import { requireOrgMember } from "../db/helpers.js";
 import { protectedProcedure, router } from "../trpc.js";
@@ -95,4 +96,39 @@ export const teamsRouter = router({
       return { ok: true as const };
     }),
 
+  /** Carga por membro — plano2.0 #14 (sem ranking/avaliação). */
+  workload: protectedProcedure.query(async ({ ctx }) => {
+    const db = getDb();
+    if (!db) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Banco indisponível" });
+    const me = (ctx as Ctx).user;
+    await requireOrgMember(db, me.organizationId, me.id);
+
+    const members = await db
+      .select({ id: users.id, name: users.name, role: organizationMembers.role })
+      .from(organizationMembers)
+      .innerJoin(users, eq(users.id, organizationMembers.userId))
+      .where(and(eq(organizationMembers.organizationId, me.organizationId), eq(organizationMembers.active, true)));
+
+    const orgTasks = await db.select().from(tasks).where(eq(tasks.organizationId, me.organizationId));
+    const startDay = new Date(); startDay.setHours(0, 0, 0, 0);
+    const endDay = new Date(); endDay.setHours(23, 59, 59, 999);
+    const staleCutoff = new Date(Date.now() - 24 * 3600 * 1000);
+
+    return members.map((m) => {
+      const mine = orgTasks.filter((t) => t.assigneeId === m.id);
+      const open = (t: (typeof mine)[number]) => t.status !== "completed" && t.status !== "archived";
+      const overdue = mine.filter((t) => isOverdue({ status: t.status, dueAt: t.dueAt }));
+      const dueToday = mine.filter((t) => t.dueAt && open(t) && new Date(t.dueAt) >= startDay && new Date(t.dueAt) <= endDay);
+      const stale = mine.filter((t) => t.status === "in_progress" && new Date(t.updatedAt) < staleCutoff);
+      return {
+        id: m.id, name: m.name, role: m.role,
+        open: mine.filter(open).length,
+        overdue: overdue.length,
+        dueToday: dueToday.length,
+        inProgress: mine.filter((t) => t.status === "in_progress").length,
+        completedToday: mine.filter((t) => t.status === "completed" && t.completedAt && new Date(t.completedAt) >= startDay).length,
+        stale: stale.length,
+      };
+    });
+  }),
 });

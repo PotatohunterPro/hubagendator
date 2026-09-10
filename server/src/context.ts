@@ -25,6 +25,7 @@ const DEV_USERS: Record<string, SessionUser> = {
 export function createContext({ req }: CreateExpressContextOptions): Context {
   const raw = req.headers["x-user-id"];
   const key = Array.isArray(raw) ? raw[0] : raw;
-  const user = (key ? DEV_USERS[key] : undefined) ?? DEV_USERS.carlos;
-  return { user: user ?? null };
+  // Sem fallback silencioso: header ausente/ inválido => não autenticado.
+  const user = key ? (DEV_USERS[key] ?? null) : null;
+  return { user };
 }
