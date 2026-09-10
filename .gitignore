@@ -1,0 +1,17 @@
+node_modules/
+dist/
+build/
+.vite/
+*.local
+.env
+.env.*
+!.env.example
+drizzle/*.db
+server/uploads/*
+!server/uploads/.keep
+*.sqlite*
+coverage/
+playwright-report/
+test-results/
+.DS_Store
+Thumbs.db
