@@ -9,7 +9,7 @@
     "start": "node dist/index.js",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run",
-    "lint": "echo \"(lint pendente — sem eslint no esqueleto)\"",
+    "lint": "eslint .",
     "seed": "tsx src/seed.ts"
   },
   "dependencies": {

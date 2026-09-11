@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom";
 import {
   Bell,
+  CalendarDays,
   ClipboardList,
   Home,
   KanbanSquare,
@@ -14,6 +15,7 @@ const ITEMS = [
   { to: "/app", label: "Início", icon: Home },
   { to: "/app/my-tasks", label: "Minhas tarefas", icon: UserCheck },
   { to: "/app/tasks", label: "Todas as tarefas", icon: ClipboardList },
+  { to: "/app/calendar", label: "Agenda", icon: CalendarDays },
   { to: "/app/board", label: "Quadro", icon: KanbanSquare },
   { to: "/app/team", label: "Equipe", icon: Users },
   { to: "/app/clients", label: "Clientes", icon: Store },

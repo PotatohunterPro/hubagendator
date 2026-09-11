@@ -3,6 +3,8 @@ import dotenv from "dotenv";
 dotenv.config({ path: new URL("../../.env", import.meta.url) });
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
+import { sql } from "drizzle-orm";
+import { hashPassword } from "./auth/password.js";
 import {
   clients,
   notifications,
@@ -18,6 +20,8 @@ import {
 
 const ORG = "e0000000-0000-4000-8000-000000000001";
 const TEAM = "e0000000-0000-4000-8000-000000000002";
+// Senha padrão do ambiente de demonstração (login interno por nome + senha).
+const DEMO_PASSWORD = "hubsolucao";
 const today6pm = new Date(new Date().setHours(18, 0, 0, 0));
 const tomorrow = new Date(Date.now() + 86400000);
 const yesterday = new Date(Date.now() - 86400000);
@@ -27,16 +31,23 @@ async function main() {
   if (!url) throw new Error("DATABASE_URL ausente — copie .env.example para .env");
   const pool = new Pool({ connectionString: url });
   const db = drizzle(pool);
+  const pw = hashPassword(DEMO_PASSWORD);
 
   await db.insert(organizations).values({ id: ORG, name: "Empresa demo", timezone: "America/Sao_Paulo" }).onConflictDoNothing();
 
-  await db.insert(users).values([
-    { id: "carlos", name: "Carlos", email: "carlos@demo.local" },
-    { id: "gisele", name: "Gisele", email: "gisele@demo.local" },
-    { id: "wellington", name: "Wellington", email: "wellington@demo.local" },
-  ]).onConflictDoNothing();
+  // Rodrigo é o gestor inicial; os demais são colaboradores de demonstração.
+  await db
+    .insert(users)
+    .values([
+      { id: "rodrigo", name: "Rodrigo", email: "rodrigo@hubsolucao.com.br", passwordHash: pw },
+      { id: "carlos", name: "Carlos", email: "carlos@demo.local", passwordHash: pw },
+      { id: "gisele", name: "Gisele", email: "gisele@demo.local", passwordHash: pw },
+      { id: "wellington", name: "Wellington", email: "wellington@demo.local", passwordHash: pw },
+    ])
+    .onConflictDoUpdate({ target: users.id, set: { passwordHash: sql`excluded.password_hash` } });
 
   await db.insert(organizationMembers).values([
+    { organizationId: ORG, userId: "rodrigo", role: "manager" },
     { organizationId: ORG, userId: "carlos", role: "manager" },
     { organizationId: ORG, userId: "gisele", role: "member" },
     { organizationId: ORG, userId: "wellington", role: "member" },

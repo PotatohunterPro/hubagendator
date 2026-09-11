@@ -1,10 +1,13 @@
 // Organização e membros — plano.md §9. Leitura p/ membros; escrita p/ admin/gestor.
 import { TRPCError } from "@trpc/server";
-import { and, eq } from "drizzle-orm";
+import { randomUUID } from "node:crypto";
+import { and, eq, ilike } from "drizzle-orm";
 import { z } from "zod";
+import { createMemberSchema } from "@hubagendor/shared";
 import { organizationMembers, organizations, users } from "../../../drizzle/schema.js";
 import { getDb } from "../db.js";
 import { requireOrgMember } from "../db/helpers.js";
+import { hashPassword } from "../auth/password.js";
 import { protectedProcedure, router } from "../trpc.js";
 import type { Context } from "../context.js";
 
@@ -54,6 +57,31 @@ export const organizationRouter = router({
       .innerJoin(users, eq(users.id, organizationMembers.userId))
       .where(eq(organizationMembers.organizationId, me.organizationId));
     return rows;
+  }),
+
+  /** Gestor/admin cria um usuário da equipe (login interno por nome + senha). */
+  createMember: protectedProcedure.input(createMemberSchema).mutation(async ({ ctx, input }) => {
+    const db = getDb();
+    if (!db) throw new TRPCError({ code: "PRECONDITION_FAILED", message: "Banco indisponível" });
+    assertManager(ctx as Ctx);
+    const me = (ctx as Ctx).user;
+
+    const [existing] = await db.select().from(users).where(ilike(users.name, input.name)).limit(1);
+    if (existing) throw new TRPCError({ code: "CONFLICT", message: "Já existe um usuário com esse nome" });
+
+    const userId = randomUUID();
+    await db.insert(users).values({
+      id: userId,
+      name: input.name,
+      email: input.email || null,
+      passwordHash: hashPassword(input.password),
+    });
+    await db.insert(organizationMembers).values({
+      organizationId: me.organizationId,
+      userId,
+      role: input.role,
+    });
+    return { id: userId, name: input.name, role: input.role, active: true };
   }),
 
   updateMemberRole: protectedProcedure

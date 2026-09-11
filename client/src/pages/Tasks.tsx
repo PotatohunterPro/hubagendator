@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
-  ArrowLeft, CalendarClock, CheckCircle2, ChevronDown, Clock, History, Paperclip, Play, RotateCcw, Send, TriangleAlert,
+  ArrowLeft, CheckCircle2, ChevronDown, Clock, History, Paperclip, Play, RotateCcw, Send, TriangleAlert,
 } from "lucide-react";
 import type { TaskOrigin, TaskStatus } from "@hubagendor/shared";
 import { ORIGIN_LABEL, PRIORITY_LABEL, taskOrigins, taskPriorities } from "@hubagendor/shared";
 import { trpc } from "../lib/trpc.js";
+import { getToken } from "../lib/session.js";
 import { dueLabel, formatDateTime, isDueToday, userName } from "../lib/format.js";
 import { AttachmentIcon, CommentTimeline, EMPTY_FILTERS, TaskFilters, TaskList, type TaskFilterValue, type TaskListItem } from "../components/tasks.js";
 import { AssigneeAvatar, EmptyState, ErrorState, LoadingState, PageHeader, PriorityBadge, TaskStatusBadge } from "../components/ui.js";
@@ -122,17 +123,24 @@ export function NewTaskPage() {
   const members = trpc.organization.getMembers.useQuery();
   const teams = trpc.teams.list.useQuery();
   const clients = trpc.clients.list.useQuery();
+  const [params] = useSearchParams();
 
   const [created, setCreated] = useState<{ id: string; assigneeId: string } | null>(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [assigneeId, setAssigneeId] = useState("");
+  const [assigneeId, setAssigneeId] = useState(params.get("assignee") ?? "");
   const [priority, setPriority] = useState<(typeof taskPriorities)[number]>("normal");
   const [origin, setOrigin] = useState<"" | TaskOrigin>("");
   const [teamId, setTeamId] = useState("");
   const [clientId, setClientId] = useState("");
   const [dueAt, setDueAt] = useState("");
   const [showMore, setShowMore] = useState(false);
+  // Agendamento (Agenda v1)
+  const [hasSchedule, setHasSchedule] = useState(Boolean(params.get("date") && params.get("start")));
+  const [schedDate, setSchedDate] = useState(params.get("date") ?? "");
+  const [schedStart, setSchedStart] = useState(params.get("start") ?? "");
+  const [schedEnd, setSchedEnd] = useState(params.get("end") ?? "");
+  const [location, setLocation] = useState("");
 
   const create = trpc.tasks.create.useMutation({
     onSuccess: (task) => {
@@ -146,9 +154,31 @@ export function NewTaskPage() {
 
   const activeMembers = (members.data ?? []).filter((m) => m.active);
 
+  // Checagem de conflito de horário (avisa, não bloqueia — Agenda §9).
+  const conflictInput = useMemo(() => {
+    if (!hasSchedule || !assigneeId || !schedDate || !schedStart || !schedEnd) return null;
+    const start = new Date(`${schedDate}T${schedStart}`);
+    const end = new Date(`${schedDate}T${schedEnd}`);
+    if (end <= start) return null;
+    return { assigneeId, scheduledStart: start, scheduledEnd: end };
+  }, [hasSchedule, assigneeId, schedDate, schedStart, schedEnd]);
+  const conflicts = trpc.tasks.checkConflict.useQuery(
+    conflictInput ?? { assigneeId: "", scheduledStart: new Date(), scheduledEnd: new Date() },
+    { enabled: Boolean(conflictInput) },
+  );
+  const conflictList = conflictInput ? (conflicts.data ?? []) : [];
+
   function submit() {
     if (!title.trim()) { notify("Informe o título da tarefa.", "error"); return; }
     if (!assigneeId) { notify("Selecione um responsável.", "error"); return; }
+    let scheduledStart: Date | undefined;
+    let scheduledEnd: Date | undefined;
+    if (hasSchedule) {
+      if (!schedDate || !schedStart || !schedEnd) { notify("Informe data, início e fim do agendamento.", "error"); return; }
+      scheduledStart = new Date(`${schedDate}T${schedStart}`);
+      scheduledEnd = new Date(`${schedDate}T${schedEnd}`);
+      if (scheduledEnd <= scheduledStart) { notify("O fim deve ser posterior ao início.", "error"); return; }
+    }
     create.mutate({
       title,
       description: description || undefined,
@@ -158,6 +188,9 @@ export function NewTaskPage() {
       teamId: teamId || undefined,
       clientId: clientId || undefined,
       dueAt: dueAt ? new Date(dueAt) : undefined,
+      scheduledStart,
+      scheduledEnd,
+      location: hasSchedule && location ? location : undefined,
     });
   }
 
@@ -168,7 +201,7 @@ export function NewTaskPage() {
           <CheckCircle2 size={26} />
         </div>
         <p role="status" className="font-semibold text-on-surface">Demanda Encaminhada!</p>
-        <p className="text-[13px] text-on-surface-variant">Notificação despachada ao técnico.</p>
+        <p className="text-[13px] text-on-surface-variant">Notificação enviada ao responsável.</p>
         <Link to={`/app/tasks/${created.id}`} className="block rounded-md bg-primary-container py-3 font-semibold text-on-primary">Abrir tarefa</Link>
         <button onClick={() => { setCreated(null); setTitle(""); setDescription(""); setDueAt(""); }} className="block w-full rounded-md border border-outline-variant bg-surface-container-lowest py-3 font-semibold">Criar outra</button>
         <button onClick={() => nav("/app")} className="w-full py-3 font-semibold text-on-surface-variant">Voltar ao painel</button>
@@ -182,7 +215,7 @@ export function NewTaskPage() {
 
   return (
     <form className="mx-auto max-w-lg space-y-3 pb-28" onSubmit={(e) => { e.preventDefault(); submit(); }}>
-      <PageHeader eyebrow="Despacho Ágil" title="Nova Tarefa" subtitle="Registre uma demanda operacional direta da equipe." />
+      <PageHeader title="Nova Tarefa" subtitle="Registre uma demanda operacional direta da equipe." />
 
       <div className={card}>
         <label className={label} htmlFor="nt-title">Título da Demanda</label>
@@ -235,8 +268,52 @@ export function NewTaskPage() {
         </div>
       </div>
 
+      <div className={card}>
+        <div className="flex items-center justify-between">
+          <label className={label + " mb-0"}>Agendamento</label>
+          <div className="flex gap-1.5">
+            <button type="button" onClick={() => setHasSchedule(false)} className={`h-8 rounded-md border px-3 text-xs font-semibold ${!hasSchedule ? "border-primary-container bg-primary-container text-on-primary" : "border-outline-variant bg-surface-container-low text-on-surface-variant"}`}>Não</button>
+            <button type="button" onClick={() => setHasSchedule(true)} className={`h-8 rounded-md border px-3 text-xs font-semibold ${hasSchedule ? "border-primary-container bg-primary-container text-on-primary" : "border-outline-variant bg-surface-container-low text-on-surface-variant"}`}>Sim</button>
+          </div>
+        </div>
+        {hasSchedule && (
+          <div className="mt-3 space-y-2">
+            <div>
+              <span className="mb-1 block text-[12px] text-on-surface-variant">Data</span>
+              <input type="date" className={field} value={schedDate} onChange={(e) => setSchedDate(e.target.value)} />
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <span className="mb-1 block text-[12px] text-on-surface-variant">Início</span>
+                <input type="time" className={field} value={schedStart} onChange={(e) => setSchedStart(e.target.value)} />
+              </div>
+              <div>
+                <span className="mb-1 block text-[12px] text-on-surface-variant">Fim</span>
+                <input type="time" className={field} value={schedEnd} onChange={(e) => setSchedEnd(e.target.value)} />
+              </div>
+            </div>
+            <div>
+              <span className="mb-1 block text-[12px] text-on-surface-variant">Local</span>
+              <input className={field} value={location} onChange={(e) => setLocation(e.target.value)} placeholder="Ex.: Bairro Y" />
+            </div>
+            {conflictList.length > 0 && (
+              <div role="alert" className="rounded-lg border border-attention-200 bg-attention-100/60 p-3 text-[12px] text-attention-800">
+                <p className="flex items-center gap-1.5 font-semibold"><TriangleAlert size={14} /> {userName(assigneeId)} já possui outra atividade neste horário:</p>
+                <ul className="mt-1 list-disc pl-5">
+                  {conflictList.map((c) => (
+                    <li key={c.id}>“{c.title}” ({new Date(c.scheduledStart).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}–{new Date(c.scheduledEnd).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })})</li>
+                  ))}
+                </ul>
+                <p className="mt-1">Você pode manter mesmo assim.</p>
+              </div>
+            )}
+          </div>
+        )}
+        <p className="mt-2 text-[11px] text-on-surface-variant">O prazo é o limite de conclusão; o agendamento é quando a atividade será executada.</p>
+      </div>
+
       <button type="button" onClick={() => setShowMore((v) => !v)} className="flex w-full items-center justify-between rounded-xl border border-outline-variant bg-surface-container-lowest px-4 py-3 text-sm font-medium text-on-surface">
-        Instruções Técnicas
+        Instruções
         <ChevronDown size={18} className={`transition ${showMore ? "rotate-180" : ""}`} />
       </button>
 
@@ -343,7 +420,7 @@ export function TaskDetailPage() {
           <ArrowLeft size={15} /> Minhas Tarefas
         </Link>
         <h1 className="text-xl font-semibold leading-tight tracking-tight text-on-surface">{t.title}</h1>
-        <p className="mt-1 text-[12px] text-on-surface-variant">Ordem de Serviço #OS-8492 · Estação PDV 01</p>
+        <p className="mt-1 text-[12px] text-on-surface-variant">Criada por {userName(t.creatorId)}</p>
       </div>
 
       <div className="grid grid-cols-2 gap-2">
@@ -466,7 +543,7 @@ function AttachmentSection({ taskId, attachments }: {
     try {
       const fd = new FormData();
       fd.append("file", file);
-      const res = await fetch("/uploads", { method: "POST", headers: { "x-user-id": localStorage.getItem("hub.userId") ?? "carlos" }, body: fd });
+      const res = await fetch("/uploads", { method: "POST", headers: { "x-session-token": getToken() ?? "" }, body: fd });
       if (!res.ok) throw new Error(await res.text());
       const meta = await res.json();
       attach.mutate({ taskId, fileUrl: meta.fileUrl, fileName: meta.fileName, mimeType: meta.mimeType, fileSize: meta.fileSize });

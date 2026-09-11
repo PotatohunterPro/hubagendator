@@ -1,19 +1,37 @@
-// Sessão do cliente. Enquanto a autenticação definitiva não está integrada,
-// o backend identifica o usuário pelo header `x-user-id`. Sem header válido,
-// o servidor responde UNAUTHORIZED (não há fallback silencioso — plano2.0 §6.8).
-const KEY = "hub.userId";
+// Sessão do cliente: token assinado guardado localmente e enviado no header
+// `x-session-token`. Sem fallback silencioso — sem token, o backend responde 401.
+import type { MemberRole } from "@hubagendor/shared";
 
-export function getUserId(): string | null {
+const TOKEN_KEY = "hub.token";
+const USER_KEY = "hub.user";
+
+export interface StoredUser {
+  id: string;
+  name: string;
+  role: MemberRole;
+}
+
+export function getToken(): string | null {
   try {
-    return localStorage.getItem(KEY);
+    return localStorage.getItem(TOKEN_KEY);
   } catch {
     return null;
   }
 }
 
-export function setUserId(id: string): void {
+export function getUser(): StoredUser | null {
   try {
-    localStorage.setItem(KEY, id);
+    const raw = localStorage.getItem(USER_KEY);
+    return raw ? (JSON.parse(raw) as StoredUser) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function setSession(token: string, user: StoredUser): void {
+  try {
+    localStorage.setItem(TOKEN_KEY, token);
+    localStorage.setItem(USER_KEY, JSON.stringify(user));
   } catch {
     /* storage indisponível */
   }
@@ -21,19 +39,9 @@ export function setUserId(id: string): void {
 
 export function clearSession(): void {
   try {
-    localStorage.removeItem(KEY);
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
   } catch {
     /* storage indisponível */
   }
-}
-
-/** Personas de desenvolvimento — exibidas apenas em build de desenvolvimento. */
-export const DEV_PERSONAS = [
-  { id: "carlos", name: "Carlos", role: "Gestor", email: "carlos@hubsolucao.com.br" },
-  { id: "gisele", name: "Gisele", role: "Colaboradora", email: "gisele@hubsolucao.com.br" },
-  { id: "wellington", name: "Wellington", role: "Colaborador", email: "wellington@hubsolucao.com.br" },
-] as const;
-
-export function isDev(): boolean {
-  return import.meta.env.DEV;
 }

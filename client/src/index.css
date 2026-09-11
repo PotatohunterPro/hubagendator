@@ -37,6 +37,22 @@
   --color-error-container: #ffdad6;
   --color-on-error: #ffffff;
   --color-on-error-container: #93000a;
+
+  /* Semântica operacional adicional (aprovada): verde = certo/concluído,
+     âmbar = atenção/prazo próximo. Mantém a base visual Material 3. */
+  --color-success-50: #ecfdf5;
+  --color-success-100: #d1fae5;
+  --color-success-200: #6ee7b7;
+  --color-success-600: #059669;
+  --color-success-700: #047857;
+  --color-success-800: #065f46;
+
+  --color-attention-50: #fffbeb;
+  --color-attention-100: #fef3c7;
+  --color-attention-200: #fcd34d;
+  --color-attention-600: #d97706;
+  --color-attention-700: #b45309;
+  --color-attention-800: #92400e;
   --font-sans: "Geist", "Inter", ui-sans-serif, system-ui, sans-serif;
   --shadow-tier-1: 0 1px 2px 0 rgba(15, 23, 42, 0.04);
   --shadow-tier-2: 0 4px 6px -1px rgba(15, 23, 42, 0.07), 0 2px 4px -2px rgba(15, 23, 42, 0.05);

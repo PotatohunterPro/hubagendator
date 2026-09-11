@@ -1,7 +1,11 @@
-// Contexto tRPC: integra ao mecanismo de autenticação do projeto.
-// ESQUELETO: lê `x-user-id` (dev) — trocar pelo session/cookie real na Etapa 2.
+// Contexto tRPC: sessão por token assinado (header `x-session-token`).
+// Sem fallback silencioso — token ausente/inválido => user null => 401.
 import type { CreateExpressContextOptions } from "@trpc/server/adapters/express";
+import { and, eq } from "drizzle-orm";
 import type { MemberRole } from "@hubagendor/shared";
+import { organizationMembers, users } from "../../drizzle/schema.js";
+import { getDb } from "./db.js";
+import { verifySession } from "./auth/session.js";
 
 export interface SessionUser {
   id: string;
@@ -14,18 +18,30 @@ export interface Context {
   user: SessionUser | null;
 }
 
-const DEMO_ORG = "e0000000-0000-4000-8000-000000000001"; // org do seed (Etapa 2)
+export async function createContext({ req }: CreateExpressContextOptions): Promise<Context> {
+  const raw = req.headers["x-session-token"];
+  const token = Array.isArray(raw) ? raw[0] : raw;
+  const userId = verifySession(token);
+  if (!userId) return { user: null };
 
-const DEV_USERS: Record<string, SessionUser> = {
-  carlos: { id: "carlos", name: "Carlos", organizationId: DEMO_ORG, role: "manager" },
-  gisele: { id: "gisele", name: "Gisele", organizationId: DEMO_ORG, role: "member" },
-  wellington: { id: "wellington", name: "Wellington", organizationId: DEMO_ORG, role: "member" },
-};
+  const db = getDb();
+  if (!db) return { user: null };
 
-export function createContext({ req }: CreateExpressContextOptions): Context {
-  const raw = req.headers["x-user-id"];
-  const key = Array.isArray(raw) ? raw[0] : raw;
-  // Sem fallback silencioso: header ausente/ inválido => não autenticado.
-  const user = key ? (DEV_USERS[key] ?? null) : null;
-  return { user };
+  const [row] = await db
+    .select({
+      id: users.id,
+      name: users.name,
+      active: users.active,
+      organizationId: organizationMembers.organizationId,
+      role: organizationMembers.role,
+    })
+    .from(users)
+    .innerJoin(organizationMembers, eq(organizationMembers.userId, users.id))
+    .where(and(eq(users.id, userId), eq(organizationMembers.active, true)))
+    .limit(1);
+
+  if (!row || !row.active) return { user: null };
+  return {
+    user: { id: row.id, name: row.name, organizationId: row.organizationId, role: row.role },
+  };
 }

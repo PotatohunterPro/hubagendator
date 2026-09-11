@@ -3,7 +3,7 @@ import { httpBatchLink } from "@trpc/client";
 import { useState } from "react";
 import superjson from "superjson";
 import { trpc } from "./lib/trpc.js";
-import { getUserId } from "./lib/session.js";
+import { getToken } from "./lib/session.js";
 import { ToastProvider } from "./components/Toast.js";
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -14,8 +14,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
         url: "/trpc",
         transformer: superjson,
         headers: () => {
-          const userId = getUserId();
-          return userId ? { "x-user-id": userId } : {};
+          const token = getToken();
+          return token ? { "x-session-token": token } : {};
         },
       })],
     }),

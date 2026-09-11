@@ -1,0 +1,2 @@
+ALTER TABLE "organization_members" ADD CONSTRAINT "organization_members_organization_id_user_id_pk" PRIMARY KEY("organization_id","user_id");--> statement-breakpoint
+ALTER TABLE "team_members" ADD CONSTRAINT "team_members_team_id_user_id_pk" PRIMARY KEY("team_id","user_id");

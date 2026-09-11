@@ -71,6 +71,7 @@ export function BoardPage() {
         {grouped.map((col) => (
           <div
             key={col.status}
+            data-testid={`column-${col.status}`}
             onDragOver={(e) => e.preventDefault()}
             onDrop={() => { if (dragging) { setStatus.mutate({ id: dragging, status: col.status, reason: col.status === "in_progress" ? "Movido no quadro" : undefined }); setDragging(null); } }}
             className="flex min-h-[300px] flex-col rounded-xl border border-outline-variant bg-surface-container-low/60"
@@ -85,6 +86,7 @@ export function BoardPage() {
               {col.items.map((t) => (
                 <li
                   key={t.id}
+                  data-testid={`card-${t.id}`}
                   draggable
                   onDragStart={() => setDragging(t.id)}
                   onDragEnd={() => setDragging(null)}

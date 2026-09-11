@@ -8,8 +8,8 @@
     "build": "tsc --noEmit -p tsconfig.json && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test": "echo \"(testes de componente na Etapa 4)\"",
-    "lint": "echo \"(lint pendente — sem eslint no esqueleto)\""
+    "test": "vitest run",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@hubagendor/shared": "*",
@@ -24,11 +24,15 @@
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.0.0",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/react": "^16.3.3",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "jsdom": "^30.0.1",
     "tailwindcss": "^4.0.0",
     "typescript": "^5.6.3",
-    "vite": "^6.0.0"
+    "vite": "^6.0.0",
+    "vitest": "^2.1.9"
   }
 }

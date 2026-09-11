@@ -1,9 +1,10 @@
 import { NavLink } from "react-router-dom";
-import { ClipboardList, Home, MoreHorizontal, Users } from "lucide-react";
+import { CalendarDays, ClipboardList, Home, MoreHorizontal, Users } from "lucide-react";
 
 const ITEMS = [
   { to: "/app", label: "Início", icon: Home, end: true },
   { to: "/app/tasks", label: "Tarefas", icon: ClipboardList, end: false },
+  { to: "/app/calendar", label: "Agenda", icon: CalendarDays, end: false },
   { to: "/app/team", label: "Equipe", icon: Users, end: false },
   { to: "/app/more", label: "Mais", icon: MoreHorizontal, end: false },
 ];
@@ -15,7 +16,7 @@ export function MobileBottomNav() {
         aria-label="Navegação principal"
         className="fixed inset-x-0 bottom-0 z-20 border-t border-outline-variant bg-surface/95 pb-safe shadow-tier-2 backdrop-blur-xl md:hidden"
       >
-        <ul className="grid grid-cols-4">
+        <ul className="grid grid-cols-5">
           {ITEMS.map(({ to, label, icon: Icon, end }) => (
             <li key={to}>
               <NavLink

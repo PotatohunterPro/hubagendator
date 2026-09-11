@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { AlertTriangle, CalendarClock, CheckCircle2, CircleDashed, Loader, RefreshCw } from "lucide-react";
+import { AlertTriangle, CalendarClock, CheckCircle2, CircleDashed, Loader } from "lucide-react";
 import { trpc } from "../lib/trpc.js";
 import { greeting } from "../lib/format.js";
 import { TaskList, type TaskListItem } from "../components/tasks.js";
@@ -39,7 +39,7 @@ export function DashboardPage() {
     <div className="space-y-4">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight text-on-surface">
-          Bom dia{firstName ? `, ${firstName}` : ", Carlos"}
+          {greeting()}{firstName ? `, ${firstName}` : ""}
         </h1>
         <p className="mt-1 text-[13px] text-on-surface-variant">Veja o que precisa da sua atenção agora.</p>
       </div>
@@ -53,18 +53,18 @@ export function DashboardPage() {
           <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 no-scrollbar">
             <StatCard label="Atrasadas" value={s!.overdue} to="/app/tasks?overdueOnly=1" tone="danger" icon={AlertTriangle} />
             <StatCard label="Para Hoje" value={s!.dueToday} to="/app/tasks?due=today" tone="attention" icon={CalendarClock} />
-            <StatCard label="Em Rota" value={s!.inProgress} to="/app/tasks?status=in_progress" tone="info" icon={Loader} />
-            <StatCard label="Feitas" value={s!.completedToday} to="/app/tasks?status=completed" tone="success" icon={CheckCircle2} />
+            <StatCard label="Em andamento" value={s!.inProgress} to="/app/tasks?status=in_progress" tone="info" icon={Loader} />
+            <StatCard label="Concluídas hoje" value={s!.completedToday} to="/app/tasks?status=completed" tone="success" icon={CheckCircle2} />
             <StatCard label="Sem Prazo" value={s!.noDueDate} to="/app/tasks?due=none" tone="neutral" icon={CircleDashed} />
           </div>
 
           <div className="rounded-lg border border-outline-variant bg-surface-container-lowest p-4 shadow-tier-1">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-on-surface-variant">Meta 85%</span>
+              <span className="text-on-surface-variant">Taxa de conclusão</span>
               <span className="font-semibold tnum">{s!.completion.rate}% <span className="font-normal text-outline">· {s!.completion.done}/{s!.completion.total}</span></span>
             </div>
             <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-surface-container">
-              <div className="h-full rounded-full bg-primary-container" style={{ width: `${s!.completion.rate}%` }} />
+              <div className="h-full rounded-full bg-success-600" style={{ width: `${s!.completion.rate}%` }} />
             </div>
           </div>
         </>

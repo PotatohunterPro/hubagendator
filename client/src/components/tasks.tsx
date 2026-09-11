@@ -19,9 +19,9 @@ export interface TaskListItem {
 /** Barra lateral semântica de 4px — ux-teste "Schedule Card". */
 function edgeColor(task: TaskListItem): string {
   if (task.overdue) return "bg-error";
-  if (task.status === "completed") return "bg-secondary";
+  if (task.status === "completed") return "bg-success-600";
   if (task.status === "archived") return "bg-outline-variant";
-  if (task.dueAt && isDueToday(task.dueAt)) return "bg-primary-container";
+  if (task.dueAt && isDueToday(task.dueAt)) return "bg-attention-200";
   if (task.status === "in_progress") return "bg-primary";
   return "bg-outline-variant";
 }

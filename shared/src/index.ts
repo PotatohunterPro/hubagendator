@@ -70,6 +70,34 @@ export const titleSchema = z.string().trim().min(1, "Título é obrigatório").m
 export const descriptionSchema = z.string().trim().max(5000).optional().default("");
 export const commentBodySchema = z.string().trim().min(1, "Comentário vazio").max(2000);
 
+// --- Agendamento (Agenda v1) ------------------------------------------------
+// `isScheduled` é calculado: ambos os horários preenchidos.
+export function isScheduled(t: { scheduledStart?: Date | string | null; scheduledEnd?: Date | string | null }): boolean {
+  return Boolean(t.scheduledStart && t.scheduledEnd);
+}
+
+const MAX_SCHEDULE_MS = 24 * 3600 * 1000;
+
+function refineSchedule(
+  data: { scheduledStart?: Date | null; scheduledEnd?: Date | null },
+  ctx: z.RefinementCtx,
+): void {
+  const start = data.scheduledStart ?? null;
+  const end = data.scheduledEnd ?? null;
+  if (!start && !end) return; // sem horário é válido
+  if (!start || !end) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["scheduledEnd"], message: "Informe início e fim juntos" });
+    return;
+  }
+  if (end.getTime() <= start.getTime()) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["scheduledEnd"], message: "O fim deve ser posterior ao início" });
+    return;
+  }
+  if (end.getTime() - start.getTime() > MAX_SCHEDULE_MS) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["scheduledEnd"], message: "Duração máxima de 24 horas" });
+  }
+}
+
 export const createTaskSchema = z.object({
   title: titleSchema,
   description: descriptionSchema,
@@ -79,7 +107,10 @@ export const createTaskSchema = z.object({
   teamId: z.string().uuid().optional(),
   clientId: z.string().uuid().optional(),
   dueAt: z.coerce.date().optional(),
-});
+  scheduledStart: z.coerce.date().optional(),
+  scheduledEnd: z.coerce.date().optional(),
+  location: z.string().trim().max(255).optional(),
+}).superRefine(refineSchedule);
 
 export const updateTaskSchema = z.object({
   id: z.string().uuid(),
@@ -88,6 +119,31 @@ export const updateTaskSchema = z.object({
   priority: z.enum(taskPriorities).optional(),
   origin: z.enum(taskOrigins).nullable().optional(),
   dueAt: z.coerce.date().nullable().optional(),
+  scheduledStart: z.coerce.date().nullable().optional(),
+  scheduledEnd: z.coerce.date().nullable().optional(),
+  location: z.string().trim().max(255).nullable().optional(),
+});
+
+export const setScheduleSchema = z.object({
+  id: z.string().uuid(),
+  scheduledStart: z.coerce.date(),
+  scheduledEnd: z.coerce.date(),
+  location: z.string().trim().max(255).nullable().optional(),
+}).superRefine(refineSchedule);
+
+export const clearScheduleSchema = z.object({
+  id: z.string().uuid(),
+  clearLocation: z.boolean().default(false),
+});
+
+export const agendaSchema = z.object({
+  from: z.coerce.date(),
+  to: z.coerce.date(),
+  scope: z.enum(["mine", "all", "team"]).default("all"),
+  assigneeId: z.string().optional(),
+  teamId: z.string().uuid().optional(),
+  clientId: z.string().uuid().optional(),
+  onlyConflicts: z.boolean().default(false),
 });
 
 export const setStatusSchema = z.object({
@@ -116,6 +172,23 @@ export const listTasksSchema = z.object({
 
 export type CreateTaskInput = z.infer<typeof createTaskSchema>;
 export type ListTasksInput = z.infer<typeof listTasksSchema>;
+
+// --- Auth / membros (uso interno: nome + senha) -----------------------------
+
+export const loginSchema = z.object({
+  name: z.string().trim().min(1, "Informe o nome").max(160),
+  password: z.string().min(1, "Informe a senha").max(128),
+});
+
+export const createMemberSchema = z.object({
+  name: z.string().trim().min(2, "Nome muito curto").max(160),
+  password: z.string().min(4, "Senha mínima de 4 caracteres").max(128),
+  role: z.enum(memberRoles),
+  email: z.string().trim().email().max(255).optional(),
+});
+
+export type LoginInput = z.infer<typeof loginSchema>;
+export type CreateMemberInput = z.infer<typeof createMemberSchema>;
 
 // Presentation entities shared by the Material component library.  The API
 // adapters can map persistence rows to these stable shapes without leaking

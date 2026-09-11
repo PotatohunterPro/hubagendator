@@ -42,8 +42,8 @@ export function buildApp() {
   // (OBJECT_STORAGE_*). Metadados ficam no Postgres (taskAttachments).
   app.use("/files", express.static(uploadDir));
   app.post("/uploads", (req, res, next) => {
-    // Sessão dev: exige usuário (o mecanismo real entra com o login — Etapa 2).
-    if (!req.headers["x-user-id"]) {
+    // Sessão: exige token (o mecanismo real). Sem token => 401.
+    if (!req.headers["x-session-token"] && !req.headers["x-user-id"]) {
       res.status(401).json({ error: "Não autenticado" });
       return;
     }

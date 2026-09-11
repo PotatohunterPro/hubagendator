@@ -4,17 +4,21 @@ import { TRPCError } from "@trpc/server";
 import {
   PRIORITY_LABEL,
   STATUS_LABEL,
+  agendaSchema,
   assignTaskSchema,
   canTransition,
+  clearScheduleSchema,
   commentBodySchema,
   createTaskSchema,
   isOverdue,
+  isScheduled,
   listTasksSchema,
+  setScheduleSchema,
   setStatusSchema,
   updateTaskSchema,
   type MemberRole,
 } from "@hubagendor/shared";
-import { and, desc, eq, ilike, inArray, or } from "drizzle-orm";
+import { and, desc, eq, gt, ilike, inArray, lt, or } from "drizzle-orm";
 import { z } from "zod";
 import {
   clients,
@@ -110,6 +114,8 @@ async function enrich(db: Db, rows: TaskRow[]) {
   return rows.map((t) => ({
     ...t,
     dueAt: t.dueAt ? t.dueAt.toISOString() : null,
+    scheduledStart: t.scheduledStart ? t.scheduledStart.toISOString() : null,
+    scheduledEnd: t.scheduledEnd ? t.scheduledEnd.toISOString() : null,
     completedAt: t.completedAt ? t.completedAt.toISOString() : null,
     archivedAt: t.archivedAt ? t.archivedAt.toISOString() : null,
     createdAt: t.createdAt.toISOString(),
@@ -119,6 +125,30 @@ async function enrich(db: Db, rows: TaskRow[]) {
     statusLabel: STATUS_LABEL[t.status],
     priorityLabel: PRIORITY_LABEL[t.priority],
   }));
+}
+
+/** Conflito: mesma pessoa, horários sobrepostos, tarefa aberta. */
+async function findConflicts(
+  db: Db,
+  orgId: string,
+  assigneeId: string,
+  start: Date,
+  end: Date,
+  excludeTaskId?: string,
+) {
+  const rows = await db
+    .select()
+    .from(tasks)
+    .where(
+      and(
+        eq(tasks.organizationId, orgId),
+        eq(tasks.assigneeId, assigneeId),
+        inArray(tasks.status, ["todo", "in_progress"]),
+        lt(tasks.scheduledStart, end),
+        gt(tasks.scheduledEnd, start),
+      ),
+    );
+  return rows.filter((t) => t.id !== excludeTaskId && t.scheduledStart && t.scheduledEnd);
 }
 
 function sortOperational<T extends { status: TaskRow["status"]; dueAt: Date | string | null; updatedAt: Date | string }>(items: T[]): T[] {
@@ -241,9 +271,18 @@ export const tasksRouter = router({
       teamId: input.teamId,
       clientId: input.clientId,
       dueAt: input.dueAt ? new Date(input.dueAt) : null,
+      scheduledStart: input.scheduledStart ? new Date(input.scheduledStart) : null,
+      scheduledEnd: input.scheduledEnd ? new Date(input.scheduledEnd) : null,
+      location: input.location || null,
     }).returning();
 
     await logTaskEvent(db, { taskId: task.id, actorId: me.id, eventType: "created" });
+    if (isScheduled(task)) {
+      await logTaskEvent(db, {
+        taskId: task.id, actorId: me.id, eventType: "scheduled",
+        newValue: { scheduledStart: task.scheduledStart, scheduledEnd: task.scheduledEnd, location: task.location },
+      });
+    }
     if (input.assigneeId !== me.id) {
       await notifyUser(db, {
         organizationId: me.organizationId,
@@ -271,6 +310,9 @@ export const tasksRouter = router({
       ...(input.priority !== undefined ? { priority: input.priority } : {}),
       ...(input.origin !== undefined ? { origin: input.origin } : {}),
       ...(input.dueAt !== undefined ? { dueAt: input.dueAt ? new Date(input.dueAt) : null } : {}),
+      ...(input.scheduledStart !== undefined ? { scheduledStart: input.scheduledStart ? new Date(input.scheduledStart) : null } : {}),
+      ...(input.scheduledEnd !== undefined ? { scheduledEnd: input.scheduledEnd ? new Date(input.scheduledEnd) : null } : {}),
+      ...(input.location !== undefined ? { location: input.location || null } : {}),
       updatedAt: new Date(),
     }).where(eq(tasks.id, task.id)).returning();
 
@@ -370,6 +412,152 @@ export const tasksRouter = router({
       const [enriched] = await enrich(db, [updated]);
       return enriched;
     }),
+
+  /** Define/realtera o agendamento. Valida par, ordem e duração (shared). */
+  setSchedule: protectedProcedure.input(setScheduleSchema).mutation(async ({ ctx, input }) => {
+    const db = await dbOrThrow();
+    const me = (ctx as Ctx).user;
+    await requireOrgMember(db, me.organizationId, me.id);
+    const task = await getOrgTask(db, me.organizationId, input.id);
+    assertCanManage(me.role, task, me.id);
+
+    const start = new Date(input.scheduledStart);
+    const end = new Date(input.scheduledEnd);
+    const [updated] = await db.update(tasks).set({
+      scheduledStart: start,
+      scheduledEnd: end,
+      ...(input.location !== undefined ? { location: input.location || null } : {}),
+      updatedAt: new Date(),
+    }).where(eq(tasks.id, task.id)).returning();
+
+    await logTaskEvent(db, {
+      taskId: task.id, actorId: me.id, eventType: "schedule_changed",
+      oldValue: { scheduledStart: task.scheduledStart, scheduledEnd: task.scheduledEnd },
+      newValue: { scheduledStart: start, scheduledEnd: end, location: updated.location },
+    });
+
+    if (task.assigneeId !== me.id) {
+      await notifyUser(db, {
+        organizationId: me.organizationId, userId: task.assigneeId, type: "task_scheduled",
+        taskId: task.id, title: "Horário atualizado",
+        body: `${me.name} agendou “${task.title}” para ${start.toISOString()}.`,
+      });
+    }
+    const [enriched] = await enrich(db, [updated]);
+    return enriched;
+  }),
+
+  /** Remove o agendamento. Só limpa `location` se explicitamente solicitado. */
+  clearSchedule: protectedProcedure.input(clearScheduleSchema).mutation(async ({ ctx, input }) => {
+    const db = await dbOrThrow();
+    const me = (ctx as Ctx).user;
+    await requireOrgMember(db, me.organizationId, me.id);
+    const task = await getOrgTask(db, me.organizationId, input.id);
+    assertCanManage(me.role, task, me.id);
+
+    const [updated] = await db.update(tasks).set({
+      scheduledStart: null,
+      scheduledEnd: null,
+      ...(input.clearLocation ? { location: null } : {}),
+      updatedAt: new Date(),
+    }).where(eq(tasks.id, task.id)).returning();
+
+    await logTaskEvent(db, {
+      taskId: task.id, actorId: me.id, eventType: "schedule_removed",
+      oldValue: { scheduledStart: task.scheduledStart, scheduledEnd: task.scheduledEnd },
+    });
+    const [enriched] = await enrich(db, [updated]);
+    return enriched;
+  }),
+
+  /** Conflitos de agenda de um responsável em um intervalo. Não bloqueia. */
+  checkConflict: protectedProcedure
+    .input(z.object({
+      assigneeId: z.string(),
+      scheduledStart: z.coerce.date(),
+      scheduledEnd: z.coerce.date(),
+      excludeTaskId: z.string().uuid().optional(),
+    }))
+    .query(async ({ ctx, input }) => {
+      const db = await dbOrThrow();
+      const me = (ctx as Ctx).user;
+      await requireOrgMember(db, me.organizationId, me.id);
+      const conflicts = await findConflicts(
+        db, me.organizationId, input.assigneeId,
+        new Date(input.scheduledStart), new Date(input.scheduledEnd), input.excludeTaskId,
+      );
+      return conflicts.map((c) => ({
+        id: c.id, title: c.title,
+        scheduledStart: c.scheduledStart!.toISOString(),
+        scheduledEnd: c.scheduledEnd!.toISOString(),
+        location: c.location,
+      }));
+    }),
+
+  /** Agenda do período: tarefas com horário + pendências sem horário. */
+  agenda: protectedProcedure.input(agendaSchema).query(async ({ ctx, input }) => {
+    const db = await dbOrThrow();
+    const me = (ctx as Ctx).user;
+    await requireOrgMember(db, me.organizationId, me.id);
+    const myTeams = await userTeamIds(db, me.id);
+    const from = new Date(input.from);
+    const to = new Date(input.to);
+
+    const conds = [eq(tasks.organizationId, me.organizationId), inArray(tasks.status, ["todo", "in_progress", "completed"])];
+    if (input.scope === "mine") conds.push(eq(tasks.assigneeId, me.id));
+    else if (input.scope === "team") {
+      const teamIds = input.teamId ? [input.teamId] : myTeams;
+      if (teamIds.length === 0) return { scheduled: [], unscheduled: [] };
+      conds.push(inArray(tasks.teamId, teamIds));
+    } else if (!canViewAllTasks(me.role)) {
+      conds.push(myTeams.length ? or(eq(tasks.assigneeId, me.id), inArray(tasks.teamId, myTeams))! : eq(tasks.assigneeId, me.id));
+    }
+    if (input.assigneeId) conds.push(eq(tasks.assigneeId, input.assigneeId));
+    if (input.teamId && input.scope !== "team") conds.push(eq(tasks.teamId, input.teamId));
+    if (input.clientId) conds.push(eq(tasks.clientId, input.clientId));
+
+    const rows = await db.select().from(tasks).where(and(...conds));
+
+    // Com horário: início dentro do intervalo.
+    const scheduledRows = rows.filter((t) => isScheduled(t) && t.scheduledStart! >= from && t.scheduledStart! < to);
+    // Sem horário: pendências abertas com prazo no intervalo (ou sem prazo, no dia de hoje).
+    const unscheduledRows = rows.filter((t) => {
+      if (isScheduled(t)) return false;
+      if (t.status !== "todo" && t.status !== "in_progress") return false;
+      if (!t.dueAt) return false;
+      return t.dueAt >= from && t.dueAt < to;
+    });
+
+    let scheduled = await enrich(db, scheduledRows);
+    const unscheduled = await enrich(db, unscheduledRows);
+
+    if (input.onlyConflicts) {
+      const keep: typeof scheduled = [];
+      for (const t of scheduled) {
+        const conflicts = await findConflicts(db, me.organizationId, t.assigneeId, new Date(t.scheduledStart!), new Date(t.scheduledEnd!), t.id);
+        if (conflicts.length) keep.push(t);
+      }
+      scheduled = keep;
+    }
+
+    // Marca conflitos entre as tarefas agendadas retornadas (mesmo responsável, abertas).
+    const open = scheduled.filter((t) => t.status === "todo" || t.status === "in_progress");
+    const conflictIds = new Set<string>();
+    for (let i = 0; i < open.length; i++) {
+      for (let j = i + 1; j < open.length; j++) {
+        const a = open[i];
+        const b = open[j];
+        if (a.assigneeId !== b.assigneeId) continue;
+        if (new Date(a.scheduledStart!) < new Date(b.scheduledEnd!) && new Date(b.scheduledStart!) < new Date(a.scheduledEnd!)) {
+          conflictIds.add(a.id);
+          conflictIds.add(b.id);
+        }
+      }
+    }
+    const withConflicts = scheduled.map((t) => ({ ...t, conflict: conflictIds.has(t.id) }));
+    withConflicts.sort((a, b) => +new Date(a.scheduledStart!) - +new Date(b.scheduledStart!));
+    return { scheduled: withConflicts, unscheduled };
+  }),
 
   archive: protectedProcedure.input(z.object({ id: z.string().uuid() })).mutation(async ({ ctx, input }) => {
     const db = await dbOrThrow();

@@ -9,6 +9,7 @@ import {
   jsonb,
   pgEnum,
   pgTable,
+  primaryKey,
   text,
   timestamp,
   uuid,
@@ -43,6 +44,8 @@ export const users = pgTable("users", {
   email: varchar("email", { length: 255 }).unique(),
   phone: varchar("phone", { length: 40 }),
   avatarUrl: varchar("avatar_url", { length: 512 }),
+  // Hash scrypt ("salt:hash"). Nulo para usuários sem login (ex.: importados).
+  passwordHash: varchar("password_hash", { length: 255 }),
   active: boolean("active").notNull().default(true),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
@@ -64,6 +67,7 @@ export const organizationMembers = pgTable(
     joinedAt: timestamp("joined_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
+    primaryKey({ columns: [t.organizationId, t.userId] }),
     index("org_members_org_user_idx").on(t.organizationId, t.userId),
     index("org_members_user_idx").on(t.userId),
   ],
@@ -97,7 +101,10 @@ export const teamMembers = pgTable(
       .references(() => users.id, { onDelete: "cascade" }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (t) => [index("team_members_team_user_idx").on(t.teamId, t.userId)],
+  (t) => [
+    primaryKey({ columns: [t.teamId, t.userId] }),
+    index("team_members_team_user_idx").on(t.teamId, t.userId),
+  ],
 );
 
 // --- clients ---------------------------------------------------------------
@@ -144,6 +151,10 @@ export const tasks = pgTable(
     teamId: uuid("team_id").references(() => teams.id),
     clientId: uuid("client_id").references(() => clients.id),
     dueAt: timestamp("due_at", { withTimezone: true }),
+    // Agendamento (Agenda v1). Se ambos preenchidos, a tarefa ocupa horário.
+    scheduledStart: timestamp("scheduled_start", { withTimezone: true }),
+    scheduledEnd: timestamp("scheduled_end", { withTimezone: true }),
+    location: varchar("location", { length: 255 }),
     completedAt: timestamp("completed_at", { withTimezone: true }),
     completedBy: varchar("completed_by", { length: 128 }).references(() => users.id),
     archivedAt: timestamp("archived_at", { withTimezone: true }),
@@ -154,6 +165,7 @@ export const tasks = pgTable(
     index("tasks_org_status_due_idx").on(t.organizationId, t.status, t.dueAt),
     index("tasks_org_assignee_idx").on(t.organizationId, t.assigneeId),
     index("tasks_org_client_idx").on(t.organizationId, t.clientId),
+    index("tasks_org_scheduled_idx").on(t.organizationId, t.scheduledStart),
   ],
 );
 

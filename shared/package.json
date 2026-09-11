@@ -8,7 +8,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "vitest run",
-    "lint": "echo \"(lint pendente — sem eslint no esqueleto)\""
+    "lint": "eslint ."
   },
   "dependencies": {
     "zod": "^3.23.8"

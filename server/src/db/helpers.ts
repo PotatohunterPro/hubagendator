@@ -24,7 +24,7 @@ export async function requireOrgMember(db: Db, organizationId: string, userId: s
 
 export async function logTaskEvent(
   db: Db,
-  input: { taskId: string; actorId: string | null; eventType: string; metadata?: unknown },
+  input: { taskId: string; actorId: string | null; eventType: string; oldValue?: unknown; newValue?: unknown; metadata?: unknown },
 ) {
   const [row] = await db
     .insert(taskEvents)
@@ -32,6 +32,8 @@ export async function logTaskEvent(
       taskId: input.taskId,
       actorId: input.actorId,
       eventType: input.eventType,
+      oldValue: (input.oldValue ?? null) as never,
+      newValue: (input.newValue ?? null) as never,
       metadata: (input.metadata ?? null) as never,
     })
     .returning();
